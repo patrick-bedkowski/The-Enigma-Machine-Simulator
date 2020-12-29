@@ -1,25 +1,71 @@
 from enigma import Enigma
 from file_management import read_txt_file, format_to_dict
 from tabulate import tabulate
+from exceptions import OutOfRangeValue
+import pandas as pd
 
 # Enigma welcome label
 from pyfiglet import Figlet
 text = Figlet(font='big')
 
+def new_line(text):
+    return(
 
-def design_assumptions():
-    '''Asumptions for the inputs'''
-    return [
-        [f'{chr(62)} Text must contain characters of the alphabet in range a-z'],
-        [f'{chr(62)} Text can be inserted as lowercases or uppercases'],
-        [f'{chr(62)} Steckenbrett values must be inserted in pair of letters separated by a comma, e.g. AB, CD'],
-        [f'{chr(62)} Steckenbrett values can not hold two the same letters'],
-        [f'{chr(62)} Rotors setting must be a number from range 1-26'],
-        [f'{chr(62)} Reflector can be choosen from one of the options: A, B, C']
-    ]
+    )
 
 
-def check_if_rotors_values_are_correct(list_of_rotors):
+def design_assumptions(): #! przenieść do enigmy.py
+    '''
+    Asumptions for the inputs. It consists of each category and its values
+
+    '''
+    assumpions_dist = {
+        'Text': [
+            f'{chr(62)} must contain characters of the alphabet in range a-z\n'+\
+            f'{chr(62)} can be inserted as lowercases or uppercases'
+        ],
+        'Steckenbrett': [
+            f'{chr(62)} must be inserted in pair of letters separated by a comma, e.g. AB, CD\n'+\
+            f'{chr(62)} must not hold two the same letters'
+        ],
+        'Rotors': [
+            f'{chr(62)} must be inserted in a number of three values separated by a comma, e.g. 1,2,3\n'+\
+            f'{chr(62)} each value must be a number from range 1-26'
+        ],
+        'Reflector': [
+            f'{chr(62)} can be choosen from one of the options: A, B, C'
+        ]
+    }
+    headers = [key for key in assumpions_dist.keys()]  # Holds headers of the assumpion category
+    # max(len(ofelements))
+    return assumpions_dist.values()
+    '''print(new_line('6'))
+    for key in assumpions_dist.keys():
+        print(key)
+        for value in assumpions_dist[key]:
+            print(value)'''
+
+
+    #print(headers)
+    #print(values)
+
+    '''
+    text
+    --------------------
+    >must contain
+    >can be inserted
+    Steckenbrett
+    --------------------
+    >must be inserted
+    >must not hold
+    Rotors
+    .
+    .
+    '''
+
+
+
+def check_if_rotors_values_are_correct(list_of_rotors): #! przenieść do enigmy.py
     # check how many settings were inserted
     if len(list_of_rotors) != 3:
         raise ValueError('Incorrect number of settings was inserted')
@@ -43,13 +89,11 @@ def enter_settings_by_hand():
     if (check_if_rotors_values_are_correct(list_of_rotors)):
         return steckerbrett, int(list_of_rotors[0]), int(list_of_rotors[1]), int(list_of_rotors[2])
 
-
 def main():
     """Variables"""
     print(text.renderText('Enigma Simulator'))
-    print('| To start choose one of the options\n\
-| 1. Read from file 2. Import own text 3. View design assumptions of the machine\n'
-    )
+    options = [['1. Read text from file','2. Enter own text','3. View design assumptions of the machine']]
+    print(tabulate(options, tablefmt='fancy_grid'))
 
     try:
         choice = int(input('Insert a number of option that you want to use: '))
@@ -61,7 +105,8 @@ def main():
             if any(letter.isdigit() for letter in ciphered_text):  # if there's a number in inserted text
                 raise Exception('Text must contain letters from a-z only')
         elif choice == 3:
-            print(tabulate(design_assumptions(), tablefmt="github"))
+            print(tabulate(design_assumptions(), tablefmt='fancy_grid'))
+
 
             choice = (input('\nWhen you are ready to restart the simulator type y: '))
             while choice:
@@ -71,7 +116,7 @@ def main():
                     print('Insert proper value')
                     choice = (input('\nWhen you are ready to restart the simulator type y: '))
         else:
-            raise Exception('Out of range options was chosen')
+            raise OutOfRangeValue('Out of range options was chosen')
     except ValueError:
         raise ValueError('No number was inserted')
 
@@ -80,6 +125,7 @@ def main():
         pass
     elif choice_import_settings == 'n':
         steckerbrett, alpha, beta, gama = enter_settings_by_hand()
+
         enigma = Enigma(alpha, beta, gama, steckerbrett)
 
         """Conditions"""

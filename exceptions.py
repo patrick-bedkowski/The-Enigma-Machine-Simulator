@@ -7,3 +7,8 @@ class NoAsciiInFile(Exception):
     def __init__(self, text):
         super().__init__('Files contains no ascii characters')
         self.text = text
+
+class OutOfRangeValue(Exception):
+    def __init__(self, choice):
+        super().__init__('Out of range options was chosen')
+        self.choice = choice
