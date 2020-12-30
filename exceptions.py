@@ -3,12 +3,32 @@ class SteckerbrettTypeError(Exception):
         super().__init__('Steckerbrett must be a dict type')
         self.steckerbrett = steckerbrett
 
+class OutOfRangeValue(Exception):
+    def __init__(self, choice):
+        super().__init__('Out of range options was chosen')
+        self.choice = choice
+
+'''
+From file_management.py
+'''
+
 class NoAsciiInFile(Exception):
     def __init__(self, text):
         super().__init__('Files contains no ascii characters')
         self.text = text
 
-class OutOfRangeValue(Exception):
-    def __init__(self, choice):
-        super().__init__('Out of range options was chosen')
-        self.choice = choice
+class WrongNumberOfLines(Exception):
+    pass
+    '''def __init__(self, text):
+        super().__init__('Files contains more than one line')'''
+
+class FileWasNotFind(FileNotFoundError):
+    pass
+    '''def __init__(self, text):
+        super().__init__('Files contains more than one line')'''
+
+class UndefinedFileName(ValueError):
+    pass
+
+class WrongFileFormat(ValueError):
+    pass

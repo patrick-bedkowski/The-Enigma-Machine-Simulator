@@ -1,5 +1,14 @@
-from file_management import read_txt_file
+from file_management import save_txt_file, read_txt_file, format_text
 from string import ascii_lowercase
+import pytest
+from exceptions import (
+    NoAsciiInFile,
+    WrongFileFormat,
+    WrongNumberOfLines,
+    FileWasNotFind,
+    UndefinedFileName
+)
+
 
 def test_read_txt_file():
     input_path = 'ciphered_text.txt'
@@ -10,3 +19,8 @@ def test_is_in_alphabet():
     alphabet = ascii_lowercase
     split = [letter for letter in alphabet]
     assert ('a' in split)
+
+
+'''
+save_txt_file() TESTS
+'''

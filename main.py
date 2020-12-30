@@ -1,5 +1,5 @@
-from enigma import Enigma
-from file_management import read_txt_file, format_to_dict
+from enigma import Enigma, format_to_dict
+from file_management import read_txt_file, save_txt_file
 from tabulate import tabulate
 from exceptions import OutOfRangeValue
 import pandas as pd
@@ -7,6 +7,10 @@ import pandas as pd
 # Enigma welcome label
 from pyfiglet import Figlet
 text = Figlet(font='big')
+
+#! czy to moze tak byc
+def format_text(text):
+    return f'\n{text}'
 
 def design_assumptions(): #! przenieść do enigmy.py
     '''
@@ -31,23 +35,7 @@ def design_assumptions(): #! przenieść do enigmy.py
             f'{chr(62)} can be choosen from one of the options: A, B, C'
         ]
     ]
-
     return assumpions_dist
-
-    '''
-    text
-    --------------------
-    >must contain
-    >can be inserted
-    Steckenbrett
-    --------------------
-    >must be inserted
-    >must not hold
-    Rotors
-    .
-    .
-    '''
-
 
 
 def check_if_rotors_values_are_correct(list_of_rotors): #! przenieść do enigmy.py
@@ -74,9 +62,6 @@ def enter_settings_by_hand():
     if (check_if_rotors_values_are_correct(list_of_rotors)):
         return steckerbrett, int(list_of_rotors[0]), int(list_of_rotors[1]), int(list_of_rotors[2])
 
-def format_text(text):
-    return f'\n{text}'
-
 
 def main():
     '''
@@ -95,10 +80,11 @@ def main():
     try:
         choice = int(input(format_text('Insert a number of option that you want to use: ')))
         if choice == 1:
-            input_path = input(format_text('Write file path with extension .json to insert into Enigma: '))
+            input_path = input(format_text('Write file path with extension .txt to insert into Enigma: '))
             while input_path:
                 if input_path:
                     ciphered_text = read_txt_file(input_path)
+                    break
                 else:
                     print('No file inserted') #! change it so it looks good
                     print('Insert path again, or insert b to restart program: ')
@@ -145,7 +131,22 @@ def main():
                 #print(enigma.permutation(shift))
                 #inverted = enigma.inverse_permutation(alpha)
                 #print(inverted)
-        print(format_text('Here is encrypted message: ')+enigma.encrypt(ciphered_text))
+        '''Returning message'''
+        processed_text = enigma.encrypt(ciphered_text)
+        print(format_text(f'Here is encrypted message: {processed_text}'))
+
+        '''Saving message to .txt file'''
+        current_choice = input(format_text('Would you like to save this to the file? y/n: '))
+        while current_choice:
+            if current_choice == 'y':
+                save_txt_file(processed_text)
+            elif current_choice == 'n':
+                break  # continue with the program
+            else:
+                print(format_text('Insert proper value'))
+                current_choice = input(format_text('Would you like to save this to the file? y/n: '))
+                break  # THE END
+            '''Saving settings of the simulator to .json file'''
     else:
         raise Exception('Wrong answer')
 
@@ -154,3 +155,16 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+'''
+why imports matter
+
+It has to run the whole file I believe, even if you import one function
+Because there is no way for the interpreter to know before hand whether there is other code that that function needs
+like the imports at the top of the file, the function might rely on
+so it runs the imports for file_management.py when you import it in main.py
+but main.py is in the imports
+so it tries to run that
+and that tries to import file_manage.py
+'''

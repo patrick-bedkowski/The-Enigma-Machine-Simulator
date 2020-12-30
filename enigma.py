@@ -237,6 +237,20 @@ class Enigma:
         return("".join(encrypted_text))
 
 
+#! przenieść do enigma.py
+def format_to_dict(list_format):
+    '''
+    Input contains a list formated like: [letter_a letter_b, letter_c letter_d]
+    This function will convert it to dictionary like: {'a': 'b', 'c': 'd'}
+    A B, C D
+    '''
+    new_dict = {}
+    index = list_format.split(",")
+    for letters in index:
+        new_dict.update({letters[0]: letters[1]})
+    return new_dict
+
+
 """def shift_letter(alphabet):
     #shifting letters to to the left by k times
     alphabet.reverse()

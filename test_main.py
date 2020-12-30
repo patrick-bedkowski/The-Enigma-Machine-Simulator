@@ -1,10 +1,10 @@
 from main import check_if_rotors_values_are_correct
 import pytest
 
-
 def test_correct_rotors_setting():
     rotors = '20,9,10'
-    assert check_if_rotors_values_are_correct(rotors) is True
+    list_of_rotors = rotors.split(',')
+    assert check_if_rotors_values_are_correct(list_of_rotors) is True
 
 
 def test_too_many_rotor_settings():
