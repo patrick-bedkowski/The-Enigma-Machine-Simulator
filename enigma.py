@@ -8,6 +8,7 @@ class Enigma:
     # WHEN YOU IMPORT SETTINGS TO ENIGMA, PROGRAM ASSUMES THAT YOU WANT TO READ CIPHERED TEXT,
     # so there's no need to save this settings again to external file, because you already have
     # settings file for that encryption
+    # write new tests
 
     def __init__(self, alpha = 0, beta = 0, gama = 0, steckerbrett = {}, reflector = 'A'):
         '''
