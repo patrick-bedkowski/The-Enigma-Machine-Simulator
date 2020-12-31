@@ -2,7 +2,11 @@ from exceptions import SteckerbrettTypeError
 #from file_management import read_txt_file, read_steckerbrett_file
 
 class Enigma:
-    def __init__(self, alpha = 0, beta = 0, gama = 0, steckerbrett = {}):
+
+    #YOU SHOULD CREATE NEW VALUE alpha_numerate, beta_numerate, gama_numerate, so it will
+    #not be mistaken while saving to settings with changed values
+
+    def __init__(self, alpha = 0, beta = 0, gama = 0, steckerbrett = {}, reflector = 'A'):
         '''
         Class Enigma. Contains attributes:
         :param alpha: initial alpha setting of the rotor
@@ -17,9 +21,13 @@ class Enigma:
         :type gama: int
         :default gama: 0
 
-        :param steckerbrett: Steckerbrett-shows which letters should replace each other
+        :param steckerbrett: Steckerbrett shows which letters should replace each other
         :type steckerbrett: dict
         :default steckerbrett: {}
+
+        :param reflector: initial reflector setting of the rotor
+        :type steckerbrett: str
+        :default steckerbrett: 'A'
         '''
 
         #alfabet ascii
@@ -34,9 +42,10 @@ class Enigma:
         self._alpha = alpha
         self._beta = beta
         self._gama = gama
-        self._reflector = self.set_reflector()
         self._rotors = self.set_rotors()
         self._index_of_interspace = []
+
+        self._reflector = self.set_reflector(reflector)
 
     '''SET, GET: alpha, beta, gama'''
     '''After setting up new rotor values, program also needs to initaite get_rotor_settings'''
@@ -51,6 +60,9 @@ class Enigma:
 
     def steckerbrett(self):
         return self._steckerbrett
+
+    def reflector(self):
+        return self._reflector
 
     def set_new_alpha(self, new_alpha):
         if isinstance(new_alpha, int) is False:
@@ -73,15 +85,25 @@ class Enigma:
             pass  # invalid number
         self._gama = new_gama
 
-    def set_reflector(self):
-        '''Reflector holds reversed alphabet'''
-        '''There will be 3 different reflectors to choose from'''
-        reflector = self._alphabet[::-1]
+    def set_reflector(self, reflector):
+        '''
+        Reflector holds reversed alphabet
+        Function Returns alphabet shifted by my setting #!change it
+        '''
+        '''
+        There will be 3 different reflectors to choose from
+        '''
+        if reflector == "A":
+            reflector = self._alphabet[::-1]
+        if reflector == "B":
+            reflector = self._alphabet[::-2]
+        if reflector == "C":
+            reflector = self._alphabet[::-3]
         return reflector
 
     def set_rotors(self):
         '''
-        Creates a list with rotor values.
+        Returns list with each rotor values.
         First index indicates the rotor which is the first to receive code
         '''
         return [self._alpha, self._beta, self._gama]

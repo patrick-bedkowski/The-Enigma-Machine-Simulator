@@ -6,10 +6,8 @@ from exceptions import (
     FileWasNotFind,
     UndefinedFileName
 )
-'''
-Czy mogę ustalić w projekcie pewne zasady dla odczytywanego pliku?
-e.g. muszą być same duże litery alfabetu bez żadnych innych znaków
-'''
+import json
+from enigma import Enigma
 
 '''IS THIS OPTIMAl???'''
 def check_if_ascii(letter):  # checks if input is in ascii lowercases
@@ -20,6 +18,14 @@ def check_if_ascii(letter):  # checks if input is in ascii lowercases
         return True
     else:
         return False
+
+def get_input(text):
+    return input(text)
+
+
+'''
+.txt file operations
+'''
 
 def read_txt_file(path):
     '''
@@ -41,9 +47,6 @@ def read_txt_file(path):
                 raise WrongNumberOfLines('Files contains more than one line') # wrong format of the file
     except FileNotFoundError:
         raise FileWasNotFind('File was not find')
-
-def get_input(text):
-    return input(text)
 
 def save_txt_file(text):
     '''
@@ -79,3 +82,32 @@ def save_txt_file(text):
     '''
     print(f'\nFile {name_of_the_file}.txt was created in the main directory')
     #! Czy powinienem zapytać użytkownika o miejsce w jakim chce zapisać plik?
+
+'''
+Saving all settings
+'''
+def save_json_file(enigma):
+    '''
+    Creating dictionary to store settings from enigma object #! is it obj
+    '''
+    enigma_settings = {}
+    enigma_settings['rotors'] = enigma.set_rotors()
+    enigma_settings['steckenbrett'] = enigma.steckerbrett()
+    enigma_settings['reflector'] = enigma.reflector()
+
+    '''
+    File is created
+    '''
+    with open('data.json', 'w') as filehandle:
+        json.dump(enigma_settings, filehandle)
+
+    '''
+    Proper message is displayed
+    '''
+    print(f'\nFile data.json was created in the main directory')
+
+'''
+.json file operations
+'''
+
+
