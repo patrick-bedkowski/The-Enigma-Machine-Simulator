@@ -140,6 +140,7 @@ def main():
         while current_choice:
             if current_choice == 'y':
                 save_txt_file(processed_text)
+                break
             elif current_choice == 'n':
                 break  # continue with the program
             else:
@@ -149,6 +150,8 @@ def main():
             '''Saving settings of the simulator to .json file'''
     else:
         raise Exception('Wrong answer')
+
+    print('\nThank you for using my Enigma Machine Simulator')
 
     #steckerbrett = read_steckerbrett_file()
 
