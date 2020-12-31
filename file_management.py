@@ -46,7 +46,7 @@ def read_txt_file(path):
             else:
                 raise WrongNumberOfLines('Files contains more than one line') # wrong format of the file
     except FileNotFoundError:
-        raise FileWasNotFind('File was not find')
+        raise FileWasNotFind('File was not found')
 
 def save_txt_file(text):
     '''
@@ -83,9 +83,11 @@ def save_txt_file(text):
     print(f'\nFile {name_of_the_file}.txt was created in the main directory')
     #! Czy powinienem zapytać użytkownika o miejsce w jakim chce zapisać plik?
 
+
 '''
-Saving all settings
+.json file operations
 '''
+
 def save_json_file(enigma):
     '''
     Creating dictionary to store settings from enigma object #! is it obj
@@ -106,8 +108,18 @@ def save_json_file(enigma):
     '''
     print(f'\nFile data.json was created in the main directory')
 
-'''
-.json file operations
-'''
 
+def read_json_file(path):
+    '''
+    This function receives path to .json file that later returns settings
+    '''
+    try:
+        with open(path, "r") as filehandle:  # open file
+            data = json.load(filehandle)
+            rotors = data['rotors']
+            steckenbrett = data['steckenbrett']
+            reflector = data['reflector']
+            return rotors[0], rotors[1], rotors[2], steckenbrett, reflector
+    except FileNotFoundError:
+        raise FileWasNotFind('File was not found')
 

@@ -3,8 +3,11 @@ from exceptions import SteckerbrettTypeError
 
 class Enigma:
 
-    #YOU SHOULD CREATE NEW VALUE alpha_numerate, beta_numerate, gama_numerate, so it will
-    #not be mistaken while saving to settings with changed values
+    # YOU SHOULD CREATE NEW VALUE alpha_numerate, beta_numerate, gama_numerate, so it will
+    # not be mistaken while saving to settings with changed values
+    # WHEN YOU IMPORT SETTINGS TO ENIGMA, PROGRAM ASSUMES THAT YOU WANT TO READ CIPHERED TEXT,
+    # so there's no need to save this settings again to external file, because you already have
+    # settings file for that encryption
 
     def __init__(self, alpha = 0, beta = 0, gama = 0, steckerbrett = {}, reflector = 'A'):
         '''
@@ -45,7 +48,8 @@ class Enigma:
         self._rotors = self.set_rotors()
         self._index_of_interspace = []
 
-        self._reflector = self.set_reflector(reflector)
+        self._reflector = reflector
+
 
     '''SET, GET: alpha, beta, gama'''
     '''After setting up new rotor values, program also needs to initaite get_rotor_settings'''
@@ -85,7 +89,7 @@ class Enigma:
             pass  # invalid number
         self._gama = new_gama
 
-    def set_reflector(self, reflector):
+    def reflector_values(self, reflector, index):
         '''
         Reflector holds reversed alphabet
         Function Returns alphabet shifted by my setting #!change it
@@ -99,7 +103,7 @@ class Enigma:
             reflector = self._alphabet[::-2]
         if reflector == "C":
             reflector = self._alphabet[::-3]
-        return reflector
+        return reflector[index]
 
     def set_rotors(self):
         '''
@@ -242,7 +246,7 @@ class Enigma:
                 next_letter = self.permutation(self._beta)[self._alphabet.index(next_letter)]
                 next_letter = self.permutation(self._gama)[self._alphabet.index(next_letter)]
 
-                next_letter = self._reflector[self._alphabet.index(next_letter)]
+                next_letter = self.reflector_values(self._reflector, self._alphabet.index(next_letter))
 
                 next_letter = self.inverse_permutation(self._gama)[self._alphabet.index(next_letter)]
                 next_letter = self.inverse_permutation(self._beta)[self._alphabet.index(next_letter)]

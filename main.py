@@ -1,5 +1,5 @@
 from enigma import Enigma, format_to_dict
-from file_management import read_txt_file, save_txt_file, save_json_file
+from file_management import read_txt_file, save_txt_file, save_json_file, read_json_file
 from tabulate import tabulate
 from exceptions import OutOfRangeValue
 import pandas as pd
@@ -117,55 +117,63 @@ def main():
 
     choice_import_settings = input(format_text('Would you like to import Enigma settings from the json file? y/n: '))
     if choice_import_settings == 'y':
-        pass
+        '''Reading settings from to .json file'''
+        input_path = input(format_text('Write file path with extension .json to insert settings into Enigma: '))
+        while input_path:
+            if input_path:
+                alpha, beta, gama, steckerbrett, reflector = read_json_file(input_path)
+                break
+            else:
+                print('No file inserted') #! change it so it looks good
+                print('Insert path again, or insert b to restart program: ')
     elif choice_import_settings == 'n':
         alpha, beta, gama, steckerbrett, reflector = enter_settings_by_hand()
 
-        enigma = Enigma(alpha, beta, gama, steckerbrett, reflector)
+    enigma = Enigma(alpha, beta, gama, steckerbrett, reflector)
 
-        """Conditions"""
-        if enigma.steckerbrett(): # steckerbrett not empty
-            if enigma.steckerbrett_is_dict() and enigma.steckerbrett_check_for_values() and enigma.steckerbrett_check_for_keys():
-                #enigma.Remove_steckerbrett_connections_from_alphabet()
-                """if ' ' in ciphered_text:
-                    ciphered_text = enigma.remove_interspace(ciphered_text)
-                    print(enigma._index_of_interspace == [])
-                    print(enigma._index_of_interspace)"""
-                #print(enigma._rotors)
-                #shift = enigma.permutation(alpha)
-                #print(shift)
-                #print(enigma.permutation(shift))
-                #inverted = enigma.inverse_permutation(alpha)
-                #print(inverted)
-        '''Returning message'''
-        processed_text = enigma.encrypt(ciphered_text)
-        print(format_text(f'Here is encrypted message: {processed_text}'))
+    """Conditions"""
+    if enigma.steckerbrett(): # steckerbrett not empty
+        if enigma.steckerbrett_is_dict() and enigma.steckerbrett_check_for_values() and enigma.steckerbrett_check_for_keys():
+            #enigma.Remove_steckerbrett_connections_from_alphabet()
+            """if ' ' in ciphered_text:
+                ciphered_text = enigma.remove_interspace(ciphered_text)
+                print(enigma._index_of_interspace == [])
+                print(enigma._index_of_interspace)"""
+            #print(enigma._rotors)
+            #shift = enigma.permutation(alpha)
+            #print(shift)
+            #print(enigma.permutation(shift))
+            #inverted = enigma.inverse_permutation(alpha)
+            #print(inverted)
+    '''Returning message'''
+    processed_text = enigma.encrypt(ciphered_text)
+    print(format_text(f'Here is encrypted message: {processed_text}'))
 
-        '''Saving message to .txt file'''
-        current_choice = input(format_text('Would you like to save this to the file? y/n: '))
-        while current_choice:
-            if current_choice == 'y':
-                save_txt_file(processed_text)
-                break
-            elif current_choice == 'n':
-                break  # continue with the program
-            else:
-                print(format_text('Insert proper option'))
-                current_choice = input(format_text('Would you like to save this to the file? y/n: '))
-                break  # THE END
+    '''Saving message to .txt file'''
+    current_choice = input(format_text('Would you like to save this to the file? y/n: '))
+    while current_choice:
+        if current_choice == 'y':
+            save_txt_file(processed_text)
+            break
+        elif current_choice == 'n':
+            break  # continue with the program
+        else:
+            print(format_text('Insert proper option'))
+            current_choice = input(format_text('Would you like to save this to the file? y/n: '))
+            break  # THE END
 
-        '''Saving settings of the simulator to .json file'''
-        current_choice = input(format_text('Would you like to save enigma settings to the file? y/n: '))
-        while current_choice:
-            if current_choice == 'y':
-                save_json_file(enigma)
-                break
-            elif current_choice == 'n':
-                break  # continue with the program
-            else:
-                print(format_text('Insert proper option'))
-                current_choice = input(format_text('Would you like to save enigma settings to the file? y/n: '))
-                break  # THE END
+    '''Saving settings of the simulator to .json file'''
+    current_choice = input(format_text('Would you like to save enigma settings to the file? y/n: '))
+    while current_choice:
+        if current_choice == 'y':
+            save_json_file(enigma)
+            break
+        elif current_choice == 'n':
+            break  # continue with the program
+        else:
+            print(format_text('Insert proper option'))
+            current_choice = input(format_text('Would you like to save enigma settings to the file? y/n: '))
+            break  # THE END
     else:
         raise Exception('Wrong answer')
 
