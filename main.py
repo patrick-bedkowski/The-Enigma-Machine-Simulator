@@ -2,29 +2,28 @@ from enigma import Enigma, format_to_dict
 from file_management import read_txt_file, save_txt_file, save_json_file, read_json_file
 from tabulate import tabulate
 from exceptions import OutOfRangeValue
-import pandas as pd
 
 # Enigma welcome label
 from pyfiglet import Figlet
 text = Figlet(font='big')
 
-#! czy to moze tak byc
+# function that
 def format_text(text):
     return f'\n{text}'
 
 def design_assumptions(): #! przenieść do enigmy.py
     '''
-    Asumptions for the inputs. It consists of each category and its values
+    Asumptions for the inputs. It descibes how to insert values properly
 
     '''
     assumpions_dist = [
         ['Text',
             f'{chr(62)} can be inserted as lowercases or uppercases\n'+\
-            f'{chr(62)} must contain characters of the alphabet in range a-z'
+            f'{chr(62)} must only contain characters of the alphabet in range a-z'
         ],
         ['Steckenbrett',
             f'{chr(62)} can be left empty\n'+\
-            f'{chr(62)} must be inserted in pair of letters separated by a comma, e.g. AB, CD\n'+\
+            f'{chr(62)} must be inserted in pair of letters separated by a commas, e.g. AB, CD\n'+\
             f'{chr(62)} must not hold two identical letters'
         ],
         ['Rotors',
@@ -33,21 +32,40 @@ def design_assumptions(): #! przenieść do enigmy.py
         ],
         ['Reflector',
             f'{chr(62)} can be choosen from one of the options: A, B, C'
+        ],
+        ['Save/Import Files',
+            f'{chr(62)} name can only consists of characters of the alphabet in range a-z and numbers'
+        ],
+        ['Imported .txt file',
+            f'{chr(62)} must consists of characters of the alphabet in range a-z'+\
+            f'{chr(62)} uppercase and lowercase values of letters are acceptable'+\
+            f'{chr(62)} text must be saved in a single line'
+        ],
+        ['Option Answers ',
+            f'{chr(62)} answer must be chosen between ones specified in program and inserted in given way\n'\
+            +'  e.g. "Insert y/n", you can insert "y" as an affirmative answer, or "n" to reject it'
         ]
     ]
     return assumpions_dist
 
 
-def check_if_rotors_values_are_correct(list_of_rotors): #! przenieść do enigmy.py
-    # check how many settings were inserted
+def check_if_rotors_values_are_correct(list_of_rotors): #! przenieść do enigmy.py???
+    '''
+    This function inspects how many settings were inserted,
+    and if values mets asumptions
+    '''
+    # check how many of the rotor settings were inserted
     if len(list_of_rotors) != 3:
         raise ValueError('Incorrect number of settings was inserted')
 
+    # iterate through every rotor setting
     for rotor in list_of_rotors:
-        if int(rotor) <= 26 and int(rotor) >= 1:
+        # if setting is not a number and in range 1-26 raise exception
+        if int(rotor) in range(1,27):
             continue
         else:
             raise ValueError('Invalid rotor values')  # break and raise error
+    # If all the values are correct, continue with the program
     return True
 
 
@@ -115,7 +133,10 @@ def main():
     except ValueError:
         raise ValueError('No number was inserted')
 
-    choice_import_settings = input(format_text('Would you like to import Enigma settings from the json file? y/n: '))
+    # User have a choice to import Enigma Simulator Settings from .json file.
+    # If user chooses to import settings, he probably doesn't need to save them later in the program.
+    # The choice will be remembered and used to initiate "save_json_file" block
+    choice_import_settings = input(format_text('Would you like to import Enigma settings from the json file? y/n: ')).lower()
     if choice_import_settings == 'y':
         '''Reading settings from to .json file'''
         input_path = input(format_text('Write file path with extension .json to insert settings into Enigma: '))

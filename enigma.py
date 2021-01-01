@@ -4,17 +4,20 @@ from string import ascii_uppercase
 
 class Enigma:
 
-    # YOU SHOULD CREATE NEW VALUE alpha_numerate, beta_numerate, gama_numerate, so it will
-    # not be mistaken while saving to settings with changed values
+    # NAPRAW Reflector
+
+    # CZY mogę przyjąć założenie, że użytkownik nie przygotuje sam pliki z błędnymi ustawieniami?
     # WHEN YOU IMPORT SETTINGS TO ENIGMA, PROGRAM ASSUMES THAT YOU WANT TO READ CIPHERED TEXT,
     # so there's no need to save this settings again to external file, because you already have
     # settings file for that encryption
+
     # write new tests
     # CHECK IF KEY IS NOT IN VALUE AND VICE VERSA
 
     def __init__(self, alpha = 0, beta = 0, gama = 0, steckerbrett = {}, reflector = 'A'):
         '''
         Class Enigma. Contains attributes:
+
         :param alpha: initial alpha setting of the rotor
         :type alphat: int
         :default alpha: 0
@@ -107,12 +110,16 @@ class Enigma:
         '''
         There will be 3 different reflectors to choose from
         '''
+        def shift(seq, n):
+            return seq[n:] + seq[:n]
+
         if reflector == "A":
             reflector = self._alphabet[::-1]
+        # to nie działa
         if reflector == "B":
-            reflector = self._alphabet[::-2]
+            reflector = shift(self._alphabet, 2)
         if reflector == "C":
-            reflector = self._alphabet[::-3]
+            reflector = shift(self._alphabet, 3)
         return reflector[index]
 
     def group_rotors(self):

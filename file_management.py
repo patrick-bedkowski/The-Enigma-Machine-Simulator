@@ -14,7 +14,7 @@ def check_if_ascii(letter):  # checks if input is in ascii uppercases
     '''
     > It doesn't matter if the input is upper or lower character
     '''
-    if letter.lower() in ascii_uppercase:
+    if letter.upper() in ascii_uppercase:
         return True
     else:
         return False
@@ -94,13 +94,23 @@ def save_json_file(enigma):
     machine to the json file
     '''
 
+    name_of_the_file = get_input('\nGive your file a name. Extension will be added automatically : ')
+    if name_of_the_file:  # if name was inserted
+        for letter in name_of_the_file:  # iterate through every letter
+            if check_if_ascii(letter) or letter.isdigit():  # if letter mets assumpions continue
+                continue
+            else:
+                raise WrongFileFormat('File name assumpions were not met')
+    else:
+        raise UndefinedFileName('No name was inserted')
+
+
     #File is created
     with open('data.json', 'w') as filehandle:
         json.dump(enigma.initial_settings(), filehandle)
 
-    '''
-    Proper message is displayed
-    '''
+
+    # Proper message is displayed
     print(f'\nFile data.json was created in the main directory')
 
 
