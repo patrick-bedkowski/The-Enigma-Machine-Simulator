@@ -5,6 +5,7 @@
 # Created by: PyQt5 UI code generator 5.14.1
 #
 # WARNING! All changes made in this file will be lost!
+# FILM PANA WYSOTY, minuta 25:00
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 

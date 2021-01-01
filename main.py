@@ -132,19 +132,16 @@ def main():
     enigma = Enigma(alpha, beta, gama, steckerbrett, reflector)
 
     """Conditions"""
-    if enigma.steckerbrett(): # steckerbrett not empty
-        if enigma.steckerbrett_is_dict() and enigma.steckerbrett_check_for_values() and enigma.steckerbrett_check_for_keys():
-            #enigma.Remove_steckerbrett_connections_from_alphabet()
-            """if ' ' in ciphered_text:
-                ciphered_text = enigma.remove_interspace(ciphered_text)
-                print(enigma._index_of_interspace == [])
-                print(enigma._index_of_interspace)"""
-            #print(enigma._rotors)
-            #shift = enigma.permutation(alpha)
-            #print(shift)
-            #print(enigma.permutation(shift))
-            #inverted = enigma.inverse_permutation(alpha)
-            #print(inverted)
+    """if ' ' in ciphered_text:
+        ciphered_text = enigma.remove_interspace(ciphered_text)
+        print(enigma._index_of_interspace == [])
+        print(enigma._index_of_interspace)"""
+    #print(enigma._rotors)
+    #shift = enigma.permutation(alpha)
+    #print(shift)
+    #print(enigma.permutation(shift))
+    #inverted = enigma.inverse_permutation(alpha)
+    #print(inverted)
     '''Returning message'''
     processed_text = enigma.encrypt(ciphered_text)
     print(format_text(f'Here is encrypted message: {processed_text}'))

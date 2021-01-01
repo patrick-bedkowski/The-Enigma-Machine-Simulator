@@ -1,4 +1,4 @@
-from string import ascii_lowercase
+from string import ascii_uppercase
 from exceptions import (
     NoAsciiInFile,
     WrongFileFormat,
@@ -10,11 +10,11 @@ import json
 from enigma import Enigma
 
 '''IS THIS OPTIMAl???'''
-def check_if_ascii(letter):  # checks if input is in ascii lowercases
+def check_if_ascii(letter):  # checks if input is in ascii uppercases
     '''
     > It doesn't matter if the input is upper or lower character
     '''
-    if letter.lower() in ascii_lowercase:
+    if letter.lower() in ascii_uppercase:
         return True
     else:
         return False
@@ -90,18 +90,13 @@ def save_txt_file(text):
 
 def save_json_file(enigma):
     '''
-    Creating dictionary to store settings from enigma object #! is it obj
+    This function saves all the initial settings of the enigma
+    machine to the json file
     '''
-    enigma_settings = {}
-    enigma_settings['rotors'] = enigma.set_rotors()
-    enigma_settings['steckenbrett'] = enigma.steckerbrett()
-    enigma_settings['reflector'] = enigma.reflector()
 
-    '''
-    File is created
-    '''
+    #File is created
     with open('data.json', 'w') as filehandle:
-        json.dump(enigma_settings, filehandle)
+        json.dump(enigma.initial_settings(), filehandle)
 
     '''
     Proper message is displayed

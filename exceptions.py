@@ -8,6 +8,11 @@ class OutOfRangeValue(Exception):
         super().__init__('Out of range options was chosen')
         self.choice = choice
 
+class IncorrectReflector(Exception):
+    def __init__(self, reflector):
+        super().__init__('The value for the reflector is incorrect')
+        self.reflector = reflector
+
 '''
 From file_management.py
 '''
