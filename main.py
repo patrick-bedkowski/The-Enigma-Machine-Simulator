@@ -1,7 +1,17 @@
 from enigma import Enigma
 from file_management import read_txt_file, save_txt_file, save_json_file, read_json_file
 from tabulate import tabulate
-from exceptions import OutOfRangeValue, SteckerbrettRepeatedValues
+from exceptions import (
+    UndefinedOption,
+    SteckerbrettRepeatedValues,
+    NoAsciiInFile,
+    WrongNumberOfLines,
+    IncorrectRotorSettings,
+    InvalidRotorValues,
+    WrongFileFormat,
+    UndefinedFileName,
+    FileNotFound
+)
 
 # Enigma welcome label
 from pyfiglet import Figlet
@@ -37,8 +47,8 @@ def design_assumptions(): #! przenieść do enigmy.py
             f'{chr(62)} name can only consists of characters of the alphabet in range a-z and numbers'
         ],
         ['Imported .txt file',
-            f'{chr(62)} must consists of characters of the alphabet in range a-z'+\
-            f'{chr(62)} uppercase and lowercase values of letters are acceptable'+\
+            f'{chr(62)} must consists of characters of the alphabet in range a-z\n'+\
+            f'{chr(62)} uppercase and lowercase values of letters are acceptable\n'+\
             f'{chr(62)} text must be saved in a single line'
         ],
         ['Option Answers ',
@@ -95,15 +105,13 @@ def check_if_rotors_values_are_correct(list_of_rotors):
     '''
     # check how many of the rotor settings were inserted
     if len(list_of_rotors) != 3:
-        raise ValueError('Incorrect number of settings was inserted')
+        raise IncorrectRotorSettings('Incorrect number of settings was inserted')
 
     # iterate through every rotor setting
     for rotor in list_of_rotors:
         # if setting is not a number and in range 1-26 raise exception
-        if int(rotor) in range(1,27):
-            continue
-        else:
-            raise ValueError('Invalid rotor values')  # break and raise error
+        if int(rotor) not in range(1,27):
+            raise InvalidRotorValues('Invalid rotor values')  # raise an error
     # If all the values are correct, continue with the program
     return True
 
@@ -112,9 +120,9 @@ def enter_settings_by_hand():
     '''
     This function is executed when user wants to enter enigma settings by hand
     '''
-    steckerbrett = input(format_text('Insert Steckerbreit values that you want to switch, in format "AB, CD": '))
+    steckerbrett = input(format_text('Insert Steckerbreit values that you want to switch in format "AB,CD": '))
     if steckerbrett:  # if steckerbrett is not empty, format to dictionary
-            steckerbrett = format_to_dict(steckerbrett)
+        steckerbrett = format_to_dict(steckerbrett)
 
     rotors = input(format_text('Insert three rotor settings separated by coma (numbers 1-26): '))
     list_of_rotors = rotors.split(',')
@@ -124,6 +132,7 @@ def enter_settings_by_hand():
 
     if (check_if_rotors_values_are_correct(list_of_rotors)):
         return int(list_of_rotors[0]), int(list_of_rotors[1]), int(list_of_rotors[2]), steckerbrett, reflector
+    # if assumptions are not met, proper exception will be raised inside "check_if_rotors_values_are_correct" function
 
 
 def main():
@@ -136,107 +145,133 @@ def main():
         >view design assumptions of the enigma machine
 
     '''
-    print(text.renderText('Enigma Simulator'))
-    options = [['1. Read text from file','2. Enter own text','3. View design assumptions of the simulator']]
-    print(tabulate(options, tablefmt='fancy_grid'))
-
     try:
-        choice = int(input(format_text('Insert a number of option that you want to use: ')))
-        if choice == 1:
-            input_path = input(format_text('Write file path with extension .txt to insert into Enigma: '))
-            while input_path:
-                if input_path:
-                    ciphered_text = read_txt_file(input_path)
-                    break
+        print(text.renderText('Enigma Simulator'))
+        options = [['1. Read text from file','2. Enter own text','3. View design assumptions of the simulator']]
+        print(tabulate(options, tablefmt='fancy_grid'))
+        try:
+            choice = int(input(format_text('Insert a number of option that you want to use: ')))
+            # if choice is empty or is not a number, exception ValueError will be raised,
+            # indicating that no number was inserted
+            if choice == 1:
+                input_file = input(format_text('Write file path with extension .txt to insert into Enigma: '))
+                # if is not empty
+                if input_file:
+                    ciphered_text = read_txt_file(input_file)
+                # if input_file is empty, raise error
                 else:
-                    print('No file inserted') #! change it so it looks good
-                    print('Insert path again, or insert b to restart program: ')
+                    raise FileNotFound('File was not found')
 
-        elif choice == 2:
-            ciphered_text = input(format_text('Write message that you want to insert into Enigma: ')).upper()
-            if any(letter.isdigit() for letter in ciphered_text):  # if there's a number in inserted text
-                raise Exception('Text must contain letters from a-z only')
-        elif choice == 3:
-            print(tabulate(design_assumptions(), tablefmt='fancy_grid'))
+            elif choice == 2:
+                # user inserts own text
+                ciphered_text = input(format_text('Write message that you want to insert into Enigma: ')).upper()
 
+                # if inserted text contain no ascii characters, raise error
+                if any(letter.isdigit() for letter in ciphered_text):
+                    raise NoAsciiInFile('No ascii characters were inserted')
+            elif choice == 3:
+                # print design assumptions
+                print(tabulate(design_assumptions(), tablefmt='fancy_grid'))
 
-            choice = (input(format_text('When you are ready to restart the simulator type y: ')))
-            while choice:
+                # user can restart program after reading desing assumptions
+                choice = input(format_text('When you are ready to restart the simulator type y: '))
                 if choice == 'y':
+                    # restart main program
                     main()
                 else:
-                    print(format_text('Insert proper value'))
-                    choice = (input(format_text('When you are ready to restart the simulator type y: ')))
-        else:
-            raise OutOfRangeValue('Out of range value was chosen')
-    except ValueError:
-        raise ValueError('No number was inserted')
-
-    # User have a choice to import Enigma Simulator Settings from .json file.
-    # If user chooses to import settings, he probably doesn't need to save them later in the program.
-    # The choice will be remembered and used to initiate "save_json_file" block
-    choice_import_settings = input(format_text('Would you like to import Enigma settings from the json file? y/n: ')).lower()
-    if choice_import_settings == 'y':
-        '''Reading settings from to .json file'''
-        input_path = input(format_text('Write file path with extension .json to insert settings into Enigma: '))
-        while input_path:
-            if input_path:
-                alpha, beta, gama, steckerbrett, reflector = read_json_file(input_path)
-                break
+                    raise UndefinedOption('Inserted option is undefined')
             else:
-                print('No file inserted') #! change it so it looks good
-                print('Insert path again, or insert b to restart program: ')
-    elif choice_import_settings == 'n':
-        alpha, beta, gama, steckerbrett, reflector = enter_settings_by_hand()
+                raise UndefinedOption('Inserted option is undefined')
+        except FileNotFound as Message:
+            raise Message
+        except UndefinedOption as Message:
+            raise Message
+        except NoAsciiInFile as Message:
+            raise Message
+        except WrongNumberOfLines as Message:
+            raise Message
+        except ValueError:
+            # when a character, that cannot be converted into int, is inserted raise error
+            raise UndefinedOption('Inserted option is undefined')
 
-    enigma = Enigma(alpha, beta, gama, steckerbrett, reflector)
 
-    """Conditions"""
-    """if ' ' in ciphered_text:
-        ciphered_text = enigma.remove_interspace(ciphered_text)
-        print(enigma._index_of_interspace == [])
-        print(enigma._index_of_interspace)"""
-    #print(enigma._rotors)
-    #shift = enigma.permutation(alpha)
-    #print(shift)
-    #print(enigma.permutation(shift))
-    #inverted = enigma.inverse_permutation(alpha)
-    #print(inverted)
-    '''Returning message'''
-    processed_text = enigma.encrypt(ciphered_text)
-    print(format_text(f'Here is encrypted message: {processed_text}'))
+        # User have a choice to import Enigma Simulator Settings from .json file.
+        # If user chooses to import settings, he probably doesn't need to save them later in the program.
+        # The choice will be remembered and used to initiate "save_json_file" block
+        choice_import_settings = input(format_text('Would you like to import Enigma settings from the json file? y/n: '))
+        try:
+            if choice_import_settings == 'y':
+                '''Reading settings from to .json file'''
+                input_path = input(format_text('Write file path with extension .json to insert settings into Enigma: '))
+                if input_path:
+                    alpha, beta, gama, steckerbrett, reflector = read_json_file(input_path)
+                else:  # if input_file is empty, raise error
+                    raise FileNotFound('File was not found')
+            # if user don't want to import file with settings,
+            # settings must be inserted manualy
+            elif choice_import_settings == 'n':
+                # reads data entered by hand
+                alpha, beta, gama, steckerbrett, reflector = enter_settings_by_hand()
+            else:
+                raise UndefinedOption('Inserted option is undefined')
+        except UndefinedOption as Error:
+            raise Error
+        except IncorrectRotorSettings as Error:
+            raise Error
+        except InvalidRotorValues as Error:
+            raise Error
+        except FileNotFound as Error:
+            raise Error
+        except ValueError as Error:
+            raise Error
+            # how it looked before print(f'\n{e}')
 
-    '''Saving message to .txt file'''
-    current_choice = input(format_text('Would you like to save this to the file? y/n: '))
-    while current_choice:
-        if current_choice == 'y':
-            save_txt_file(processed_text)
-            break
-        elif current_choice == 'n':
-            break  # continue with the program
-        else:
-            print(format_text('Insert proper option'))
-            current_choice = input(format_text('Would you like to save this to the file? y/n: '))
-            break  # THE END
+        # create object of Enigma class
+        enigma = Enigma(alpha, beta, gama, steckerbrett, reflector)
 
-    '''Saving settings of the simulator to .json file'''
-    current_choice = input(format_text('Would you like to save enigma settings to the file? y/n: '))
-    while current_choice:
-        if current_choice == 'y':
-            save_json_file(enigma)
-            break
-        elif current_choice == 'n':
-            break  # continue with the program
-        else:
-            print(format_text('Insert proper option'))
-            current_choice = input(format_text('Would you like to save enigma settings to the file? y/n: '))
-            break  # THE END
-    else:
-        raise Exception('Wrong answer')
+        """Interspaces can be removed"""
+        """if ' ' in ciphered_text:
+            ciphered_text = enigma.remove_interspace(ciphered_text)
+            print(enigma._index_of_interspace == [])
+            print(enigma._index_of_interspace)"""
+        #print(enigma._rotors)
+        #shift = enigma.permutation(alpha)
+        #print(shift)
+        #print(enigma.permutation(shift))
+        #inverted = enigma.inverse_permutation(alpha)
+        #print(inverted)
+        '''Returning message'''
+        processed_text = enigma.encrypt(ciphered_text)
+        print(format_text(f'Here is encrypted message: {processed_text}'))
 
-    print('\nThank you for using my Enigma Machine Simulator')
+        '''Saving PART'''
+        try:
+            '''Saving message to .txt file'''
+            choice = input(format_text('Would you like to save this to the file? y/n: '))
+            if choice == 'y':
+                save_txt_file(processed_text)
+            elif choice == 'n':
+                pass # continue with the program
+            else:
+                raise UndefinedOption('Inserted option is undefined')
 
-    #steckerbrett = read_steckerbrett_file()
+            '''Saving settings of the simulator to .json file'''
+            choice = input(format_text('Would you like to save enigma settings to the file? y/n: '))
+            if choice == 'y':
+                save_json_file(enigma)
+            elif choice == 'n':
+                pass  # continue with the program
+            else:
+                raise UndefinedOption('Inserted option is undefined')
+        except WrongFileFormat as Message:
+            raise Message
+        except UndefinedFileName as Message:
+            raise Message
+
+        # print last message
+        print('\nThank you for using my Enigma Machine Simulator')
+    except UndefinedOption as Message:
+        raise Message
 
 
 if __name__ == '__main__':

@@ -1,4 +1,6 @@
-from exceptions import SteckerbrettTypeError, IncorrectReflector, OutOfRangeValue
+from exceptions import (
+    IncorrectReflector,
+)
 from string import ascii_uppercase
 #from file_management import read_txt_file, read_steckerbrett_file
 
@@ -35,8 +37,8 @@ class Enigma:
         :default steckerbrett: {}
 
         :param reflector: initial reflector setting of the rotor
-        :type steckerbrett: str
-        :default steckerbrett: 'A'
+        :type reflector: str
+        :default reflector: 'A'
         '''
 
         '''

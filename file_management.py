@@ -3,8 +3,8 @@ from exceptions import (
     NoAsciiInFile,
     WrongFileFormat,
     WrongNumberOfLines,
-    FileWasNotFind,
-    UndefinedFileName
+    UndefinedFileName,
+    FileNotFound
 )
 import json
 from enigma import Enigma
@@ -27,12 +27,12 @@ def get_input(text):
 .txt file operations
 '''
 
-def read_txt_file(path):
+def read_txt_file(input_file):
     '''
     This function receives path to .txt file that later returns as string
     '''
     try:
-        with open(path, "r") as file:  # open file
+        with open(input_file, "r") as file:  # open file
             lines = file.readlines()  # file's lines
             if int(len(lines)) == 1:  # if there is only one line in file
                 data = []
@@ -46,7 +46,7 @@ def read_txt_file(path):
             else:
                 raise WrongNumberOfLines('Files contains more than one line') # wrong format of the file
     except FileNotFoundError:
-        raise FileWasNotFind('File was not found')
+        raise FileNotFound('File was not found')
 
 def save_txt_file(text):
     '''
@@ -116,7 +116,8 @@ def save_json_file(enigma):
 
 def read_json_file(path):
     '''
-    This function receives path to .json file that later returns settings
+    This function receives path to .json file that later returns settings.
+    Program assumes that this file contains data in way defined in program
     '''
     try:
         with open(path, "r") as filehandle:  # open file
@@ -125,6 +126,6 @@ def read_json_file(path):
             steckenbrett = data['steckenbrett']
             reflector = data['reflector']
             return rotors[0], rotors[1], rotors[2], steckenbrett, reflector
-    except FileNotFoundError:
-        raise FileWasNotFind('File was not found')
+    except FileNotFound:
+        raise FileNotFound('File was not found')
 
