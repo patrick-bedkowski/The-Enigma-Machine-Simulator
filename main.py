@@ -1,7 +1,7 @@
-from enigma import Enigma, format_to_dict
+from enigma import Enigma
 from file_management import read_txt_file, save_txt_file, save_json_file, read_json_file
 from tabulate import tabulate
-from exceptions import OutOfRangeValue
+from exceptions import OutOfRangeValue, SteckerbrettRepeatedValues
 
 # Enigma welcome label
 from pyfiglet import Figlet
@@ -49,7 +49,46 @@ def design_assumptions(): #! przenieść do enigmy.py
     return assumpions_dist
 
 
-def check_if_rotors_values_are_correct(list_of_rotors): #! przenieść do enigmy.py???
+def format_to_dict(steckenbrett_str):
+    '''
+    Function is collecting inserted string values of conjugated letters
+    that are separated by a coma. It converts them to a dictionary with
+    key and value as conjugated letters. Function returns a dictionary.
+    '''
+    '''
+    Values must be inserted like so AB,CD
+    This function will convert str value to dictionary like: {'a': 'b', 'c': 'd'}
+    '''
+    new_dict = {}
+    # split pairs of letters separated by a coma and create a list
+    list_of_letter_pairs = steckenbrett_str.split(",")
+    # iterate through a list containing letters
+    for letters in list_of_letter_pairs:
+        # pairs of conjugated letters are updated into new dictionary
+        new_dict.update({letters[0]: letters[1]})
+    return new_dict
+
+def steckerbrett_check_for_values(steckerbrett_dict):
+    '''
+    Steckerbrett cannot hold two same values.
+    We need to check if it is true.
+    '''
+    # create a list where detected values, keys are stored
+    detected_values_keys = []
+
+    # iterate through keys, values
+    for key, value in steckerbrett_dict.items():
+        # if key, value is the same as in the detection list, raise an error
+        if key in detected_values_keys and value in detected_values_keys:
+            raise SteckerbrettRepeatedValues('Steckerbrett must have different values')
+        else:
+            # if key, value repetition has not been detected, append them into detection list
+            detected_values_keys.append(key, value)
+    # return information that repetition of the values has not been detected
+    return True
+
+
+def check_if_rotors_values_are_correct(list_of_rotors):
     '''
     This function inspects how many settings were inserted,
     and if values mets asumptions
@@ -129,7 +168,7 @@ def main():
                     print(format_text('Insert proper value'))
                     choice = (input(format_text('When you are ready to restart the simulator type y: ')))
         else:
-            raise OutOfRangeValue('Out of range options was chosen')
+            raise OutOfRangeValue('Out of range value was chosen')
     except ValueError:
         raise ValueError('No number was inserted')
 

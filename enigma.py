@@ -1,4 +1,4 @@
-from exceptions import SteckerbrettTypeError, IncorrectReflector
+from exceptions import SteckerbrettTypeError, IncorrectReflector, OutOfRangeValue
 from string import ascii_uppercase
 #from file_management import read_txt_file, read_steckerbrett_file
 
@@ -45,9 +45,10 @@ class Enigma:
         '''
         self._alphabet = [letter for letter in ascii_uppercase]
 
-        self._alpha = self.set_rotor_value(alpha)
-        self._beta = self.set_rotor_value(beta)
-        self._gama = self.set_rotor_value(gama)
+        #set
+        self._alpha = alpha
+        self._beta = beta
+        self._gama = gama
         self._steckerbrett = steckerbrett
 
         if reflector in ['A', 'B', 'C']:
@@ -61,21 +62,22 @@ class Enigma:
         '''
         This method saves initial settings of the machine, before values (like each rotor)
         are changed due to the iteration.
-        It returns dictionary with keys as
+        It returns dictionary with keys as name, and values as a value of the setting.
         '''
-
         # Creating dictionary to store initial settings
         enigma_settings = {}
         enigma_settings['rotors'] = self.group_rotors()
-        #! czy może
-        # enigma_settings['steckenbrett'] = self.steckerbrett()???
         enigma_settings['steckenbrett'] = self._steckerbrett
         enigma_settings['reflector'] = self._reflector
+
         return enigma_settings
 
 
-    '''GET: alpha, beta, gama'''
-    '''After setting up new rotor values, program also needs to initaite get_rotor_settings'''
+    '''
+    SET GET: alpha, beta, gama
+    chyba nie są potrzebne, skoro nigdzie w programie
+    się do nich nie odwołuje
+    '''
     def alpha(self):
         return self._alpha
 
@@ -90,17 +92,6 @@ class Enigma:
 
     def reflector(self):
         return self._reflector
-
-    def set_rotor_value(self, rotor_value):
-        '''
-        Method used to set up a value of a rotor.
-        if the value mets the assumptions, It returns an int value of specyfic rotor
-        '''
-        if isinstance(rotor_value, int) is False:
-            pass
-        if rotor_value < 0 and rotor_value > 27:
-            pass  # invalid number
-        return rotor_value
 
     def reflector_values(self, reflector, index):
         '''
@@ -148,44 +139,7 @@ class Enigma:
                 self._index_of_interspace.append(index-1)
         return new_text"""
 
-    '''Conditions'''
-    def steckerbrett_is_dict(self):
-        '''
-        Steckerbrett must be an dict type. If it is not then raise error
-        '''
-        if type(self._steckerbrett) is not dict:
-            raise SteckerbrettTypeError('Steckerbrett must be a dict type')
-        else:
-            return True
-
-    def steckerbrett_check_for_values(self):
-        '''
-        Steckerbrett cannot hold two same values.
-        We need to check if it is true.
-        '''
-        repeated_values = []
-        for value in self._steckerbrett.values():
-            if value in repeated_values:
-                # raise SteckerbrettRepeatedValues('Steckerbrett must have different values')
-                return False
-            else:
-                repeated_values.append(value)
-        return True
-
-    def steckerbrett_check_for_keys(self):
-        '''
-        Steckerbrett cannot hold two same keys.
-        We need to check if it is true.
-        '''
-        repeated_keys = []
-        for key in self._steckerbrett.keys():
-            if key in repeated_keys:
-                # raise SteckerbrettRepeatedKeys('Steckerbrett must have different keys')
-                return False
-            else:
-                repeated_keys.append(key)
-        return True
-
+    # chyba to nie jest potrzebne do algorytmu
     def Remove_steckerbrett_connections_from_alphabet(self):
         '''
         Letters that are connected in steckerbrett need to be removed
@@ -215,7 +169,7 @@ class Enigma:
         self.set_new_gama(self._rotors[2])"""
 
     '''
-    Heart of an algorythm. All rotors
+    Heart of an algorythm.
     '''
     def permutation(self, rotor):
         #'''format alphabet'''
@@ -253,18 +207,17 @@ class Enigma:
             '''
             # if steckerbrett holds values
             if self._steckerbrett:
-                # check assumptions
-                if self.steckerbrett_is_dict() and self.steckerbrett_check_for_values() and self.steckerbrett_check_for_keys():
-                    #enigma.Remove_steckerbrett_connections_from_alphabet()
-                    for key, value in self._steckerbrett.items():
-                        if key == letter:
-                            letter = key
-                        elif value == letter:
-                            letter = value
-                    '''if letter in self._steckerbrett.values():
-                        letter = self._steckerbrett[letter]
-                    elif letter in self._steckerbrett.keys():
-                        letter = next(k for k, v in self._steckerbrett.items() if v == letter)'''
+                #enigma.Remove_steckerbrett_connections_from_alphabet()
+
+                for key, value in self._steckerbrett.items():
+                    if key == letter:
+                        letter = key
+                    elif value == letter:
+                        letter = value
+                '''if letter in self._steckerbrett.values():
+                    letter = self._steckerbrett[letter]
+                elif letter in self._steckerbrett.keys():
+                    letter = next(k for k, v in self._steckerbrett.items() if v == letter)'''
             else:
                 continue
 
@@ -289,20 +242,6 @@ class Enigma:
 
         '''Return Result'''
         return("".join(encrypted_text))
-
-
-#! przenieść do enigma.py
-def format_to_dict(list_format):
-    '''
-    Values must be inserted like so AB,CD
-    This function will convert str value to dictionary like: {'a': 'b', 'c': 'd'}
-    '''
-    new_dict = {}
-    index = list_format.split(",")
-    for letters in index:
-        new_dict.update({letters[0]: letters[1]})
-    return new_dict
-
 
 """def shift_letter(alphabet):
     #shifting letters to to the left by k times
