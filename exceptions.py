@@ -14,32 +14,32 @@ def main():
 
 class SteckerbrettTypeError(Exception):
     def __init__(self, steckerbrett):
-        super().__init__('Steckerbrett must be a dict type\n')
+        super().__init__('\nSteckerbrett must be a dict type\n')
         self.steckerbrett = steckerbrett
 
 class SteckerbrettRepeatedValues(Exception):
     def __init__(self, steckerbrett):
-        super().__init__('Steckerbrett must have different values\n')
+        super().__init__('\nSteckerbrett must have different values\n')
         self.steckerbrett = steckerbrett
 
 class OutOfRangeValue(Exception):
     def __init__(self, choice):
-        super().__init__('Out of range value was chosen\n')
+        super().__init__('\nOut of range value was chosen\n')
         self.choice = choice
 
 class IncorrectReflector(Exception):
     def __init__(self, reflector):
-        super().__init__('The value for the reflector is incorrect\n')
+        super().__init__('\nThe value for the reflector is incorrect\n')
         self.reflector = reflector
 
 class UndefinedOption(ValueError):
     def __init__(self, choice):
-        super().__init__('Inserted option is undefined\n')
+        super().__init__('\nInserted option is undefined\n')
         self.choice = choice
 
 class FileNotFound(ValueError):
     def __init__(self, input_file):
-        super().__init__('File was not found\n')
+        super().__init__('\nFile was not found\n')
         self.input_file = input_file
 
 class IncorrectRotorSettings(ValueError):
@@ -58,9 +58,9 @@ From file_management.py
         super().__init__('File was not found')
         self.input_path = input_path'''
 
-class NoAsciiInFile(Exception):
+class NoAsciiInFile(ValueError):
     def __init__(self, text):
-        super().__init__('Files contains no ascii characters\n')
+        super().__init__('\nFiles contains no ascii characters\n')
         self.text = text
 
 class WrongNumberOfLines(Exception):

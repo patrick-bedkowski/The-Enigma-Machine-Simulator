@@ -149,82 +149,57 @@ def main():
         print(text.renderText('Enigma Simulator'))
         options = [['1. Read text from file','2. Enter own text','3. View design assumptions of the simulator']]
         print(tabulate(options, tablefmt='fancy_grid'))
-        try:
-            choice = int(input(format_text('Insert a number of option that you want to use: ')))
-            # if choice is empty or is not a number, exception ValueError will be raised,
-            # indicating that no number was inserted
-            if choice == 1:
-                input_file = input(format_text('Write file path with extension .txt to insert into Enigma: '))
-                # if is not empty
-                if input_file:
-                    ciphered_text = read_txt_file(input_file)
-                # if input_file is empty, raise error
-                else:
-                    raise FileNotFound('File was not found')
+        choice = int(input(format_text('Insert a number of option that you want to use: ')))
+        # if choice is empty or is not a number, exception ValueError will be raised,
+        # indicating that no number was inserted
+        if choice == 1:
+            input_file = input(format_text('Write file path with extension .txt to insert into Enigma: '))
+            # if is not empty
+            if input_file:
+                ciphered_text = read_txt_file(input_file)
+            # if input_file is empty, raise error
+            else:
+                raise FileNotFound('File was not found')
 
-            elif choice == 2:
-                # user inserts own text
-                ciphered_text = input(format_text('Write message that you want to insert into Enigma: ')).upper()
+        elif choice == 2:
+            # user inserts own text
+            ciphered_text = input(format_text('Write message that you want to insert into Enigma: ')).upper()
 
-                # if inserted text contain no ascii characters, raise error
-                if any(letter.isdigit() for letter in ciphered_text):
-                    raise NoAsciiInFile('No ascii characters were inserted')
-            elif choice == 3:
-                # print design assumptions
-                print(tabulate(design_assumptions(), tablefmt='fancy_grid'))
+            # if inserted text contain no ascii characters, raise error
+            if any(letter.isdigit() for letter in ciphered_text):
+                raise NoAsciiInFile('No ascii characters were inserted')
+        elif choice == 3:
+            # print design assumptions
+            print(tabulate(design_assumptions(), tablefmt='fancy_grid'))
 
-                # user can restart program after reading desing assumptions
-                choice = input(format_text('When you are ready to restart the simulator type y: '))
-                if choice == 'y':
-                    # restart main program
-                    main()
-                else:
-                    raise UndefinedOption('Inserted option is undefined')
+            # user can restart program after reading desing assumptions
+            choice = input(format_text('When you are ready to restart the simulator type y: '))
+            if choice == 'y':
+                # restart main program
+                main()
             else:
                 raise UndefinedOption('Inserted option is undefined')
-        except FileNotFound as Message:
-            raise Message
-        except UndefinedOption as Message:
-            raise Message
-        except NoAsciiInFile as Message:
-            raise Message
-        except WrongNumberOfLines as Message:
-            raise Message
-        except ValueError:
-            # when a character, that cannot be converted into int, is inserted raise error
+        else:
             raise UndefinedOption('Inserted option is undefined')
-
 
         # User have a choice to import Enigma Simulator Settings from .json file.
         # If user chooses to import settings, he probably doesn't need to save them later in the program.
         # The choice will be remembered and used to initiate "save_json_file" block
         choice_import_settings = input(format_text('Would you like to import Enigma settings from the json file? y/n: '))
-        try:
-            if choice_import_settings == 'y':
-                '''Reading settings from to .json file'''
-                input_path = input(format_text('Write file path with extension .json to insert settings into Enigma: '))
-                if input_path:
-                    alpha, beta, gama, steckerbrett, reflector = read_json_file(input_path)
-                else:  # if input_file is empty, raise error
-                    raise FileNotFound('File was not found')
-            # if user don't want to import file with settings,
-            # settings must be inserted manualy
-            elif choice_import_settings == 'n':
-                # reads data entered by hand
-                alpha, beta, gama, steckerbrett, reflector = enter_settings_by_hand()
-            else:
-                raise UndefinedOption('Inserted option is undefined')
-        except UndefinedOption as Error:
-            raise Error
-        except IncorrectRotorSettings as Error:
-            raise Error
-        except InvalidRotorValues as Error:
-            raise Error
-        except FileNotFound as Error:
-            raise Error
-        except ValueError as Error:
-            raise Error
-            # how it looked before print(f'\n{e}')
+        if choice_import_settings == 'y':
+            '''Reading settings from to .json file'''
+            input_path = input(format_text('Write file path with extension .json to insert settings into Enigma: '))
+            if input_path:
+                alpha, beta, gama, steckerbrett, reflector = read_json_file(input_path)
+            else:  # if input_file is empty, raise error
+                raise FileNotFound('File was not found')
+        # if user don't want to import file with settings,
+        # settings must be inserted manualy
+        elif choice_import_settings == 'n':
+            # reads data entered by hand
+            alpha, beta, gama, steckerbrett, reflector = enter_settings_by_hand()
+        else:
+            raise UndefinedOption('Inserted option is undefined')
 
         # create object of Enigma class
         enigma = Enigma(alpha, beta, gama, steckerbrett, reflector)
@@ -245,33 +220,48 @@ def main():
         print(format_text(f'Here is encrypted message: {processed_text}'))
 
         '''Saving PART'''
-        try:
-            '''Saving message to .txt file'''
-            choice = input(format_text('Would you like to save this to the file? y/n: '))
-            if choice == 'y':
-                save_txt_file(processed_text)
-            elif choice == 'n':
-                pass # continue with the program
-            else:
-                raise UndefinedOption('Inserted option is undefined')
 
-            '''Saving settings of the simulator to .json file'''
-            choice = input(format_text('Would you like to save enigma settings to the file? y/n: '))
-            if choice == 'y':
-                save_json_file(enigma)
-            elif choice == 'n':
-                pass  # continue with the program
-            else:
-                raise UndefinedOption('Inserted option is undefined')
-        except WrongFileFormat as Message:
-            raise Message
-        except UndefinedFileName as Message:
-            raise Message
+        '''Saving message to .txt file'''
+        choice = input(format_text('Would you like to save this to the file? y/n: '))
+        if choice == 'y':
+            save_txt_file(processed_text)
+        elif choice == 'n':
+            pass # continue with the program
+        else:
+            raise UndefinedOption('Inserted option is undefined')
+
+        '''Saving settings of the simulator to .json file'''
+        choice = input(format_text('Would you like to save enigma settings to the file? y/n: '))
+        if choice == 'y':
+            save_json_file(enigma)
+        elif choice == 'n':
+            pass  # continue with the program
+        else:
+            raise UndefinedOption('Inserted option is undefined')
+
 
         # print last message
         print('\nThank you for using my Enigma Machine Simulator')
+    except FileNotFound as Message:
+        print(Message)
+    except NoAsciiInFile as Message:
+        print(Message)
+    except WrongNumberOfLines as Message:
+        print(Message)
+    except WrongFileFormat as Message:
+        print(Message)
+    except UndefinedFileName as Message:
+        print(Message)
     except UndefinedOption as Message:
-        raise Message
+        print(Message)
+    except IncorrectRotorSettings as Message:
+        print(Message)
+    except InvalidRotorValues as Message:
+        print(Message)
+    except ValueError:
+        # when a character, that cannot be converted into int, is inserted raise error
+        print(UndefinedOption('Inserted option is undefined'))
+
 
 
 if __name__ == '__main__':
