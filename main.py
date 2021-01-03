@@ -140,9 +140,9 @@ def main():
     MAIN PROGRAM OF THE ENIGMA SIMULATOR
 
     At the beginning user is asked to choose one of the options:
-        >text will be imported from the .txt file
-        >user wants to enter text through terminal
-        >view design assumptions of the enigma machine
+        > text will be imported from the .txt file
+        > user wants to enter text through terminal
+        > view design assumptions of the enigma machine
 
     '''
     try:
