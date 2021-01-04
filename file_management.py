@@ -1,7 +1,7 @@
 from string import ascii_uppercase
 from exceptions import (
     NoAsciiInFile,
-    WrongFileFormat,
+    WrongFileName,
     WrongNumberOfLines,
     UndefinedFileName,
     FileNotFound
@@ -67,7 +67,7 @@ def save_txt_file(text):
             if check_if_ascii(letter) or letter.isdigit():  # if letter mets assumpions continue
                 continue
             else:
-                raise WrongFileFormat('File name assumpions were not met')
+                raise WrongFileName('File name assumpions were not met')
     else:
         raise UndefinedFileName('No name was inserted')
 
@@ -100,13 +100,13 @@ def save_json_file(enigma):
             if check_if_ascii(letter) or letter.isdigit():  # if letter mets assumpions continue
                 continue
             else:
-                raise WrongFileFormat('File name assumpions were not met')
+                raise WrongFileName('File name assumpions were not met')
     else:
         raise UndefinedFileName('No name was inserted')
 
 
     #File is created
-    with open('data.json', 'w') as filehandle:
+    with open(f'{name_of_the_file}.json', 'w') as filehandle:
         json.dump(enigma.initial_settings(), filehandle)
 
 

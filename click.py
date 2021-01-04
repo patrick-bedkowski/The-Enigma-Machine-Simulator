@@ -1,4 +1,12 @@
-from string import ascii_lowercase
+detected_values_keys = []
+
+key = 'A'
+value = 'B'
+detected_values_keys.extend([key, value])
+
+print(detected_values_keys)
+
+'''from string import ascii_lowercase
 
 alphabet = [letter for letter in ascii_lowercase]
 
@@ -6,7 +14,7 @@ def shift(seq, n):
     return seq[n:]+seq[:n]
 
 print(alphabet[1:]+alphabet[:1])
-print(shift(alphabet, 1))
+print(shift(alphabet, 1))'''
 
 '''dictionary = {'A': 'B'}
 

@@ -6,10 +6,9 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from main import main
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-class Ui_Enigma(QtWidgets.QMainWindow):
+class EnigmaUi(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
 
@@ -345,9 +344,16 @@ class Ui_Enigma(QtWidgets.QMainWindow):
         self.rotor_setting_gama_layout.addWidget(self.gama_combo)
         self.rotor_settings_layout.addLayout(self.rotor_setting_gama_layout)
         self.rotor_layout.addLayout(self.rotor_settings_layout)
-
         self.retranslateUi(Enigma_ui)
         QtCore.QMetaObject.connectSlotsByName(Enigma_ui)
+
+
+
+
+    def runProgram(self):
+        '''
+        Main program. First files and settings are send into main.py program
+        '''
 
         '''
         Browse files
@@ -355,25 +361,15 @@ class Ui_Enigma(QtWidgets.QMainWindow):
         txtBrowseFileName = self.browse_button_txt.clicked.connect(self.getTxtFile)
         jsonBrowseFileName = self.browse_button_json.clicked.connect(self.getJsonFile)
 
+        # Enable buttons, AT THE BOTTOM
+        self.export_button_json.setEnabled(True)
+        self.export_button_txt.setEnabled(True)
+
         '''
         Export files
         '''
         tsonExportFileName = self.export_button_json.clicked.connect(self.getSaveFileNameJson)
         txtExportFileName = self.export_button_txt.clicked.connect(self.getSaveFileNameTxt)
-
-        # When clicked enigma simulator is running
-        self.start_button.clicked.connect(self.runProgram)
-
-
-    def runProgram(self):
-
-
-
-
-
-        # Enable buttons, AT THE BOTTOM
-        self.export_button_json.setEnabled(True)
-        self.export_button_txt.setEnabled(True)
 
     '''
         Browse/Import Button Functions
@@ -429,13 +425,15 @@ class Ui_Enigma(QtWidgets.QMainWindow):
             self.beta_combo.setItemText(number, _translate("Enigma_ui", f"{number+1}"))
             self.gama_combo.setItemText(number, _translate("Enigma_ui", f"{number+1}"))
 
-
+'''
+Create a Controller class to connect the GUI and the model
+'''
 
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
     Enigma_ui = QtWidgets.QWidget()
-    ui = Ui_Enigma()
+    ui = EnigmaUi()
     ui.setupUi(Enigma_ui)
     Enigma_ui.show()
     sys.exit(app.exec_())

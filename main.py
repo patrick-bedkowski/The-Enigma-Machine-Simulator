@@ -4,11 +4,14 @@ from tabulate import tabulate
 from exceptions import (
     UndefinedOption,
     SteckerbrettRepeatedValues,
+    SteckerbrettWrongFormat,
+    SteckerbrettNotInText,
+    ReflectorValueIsUndefined,
     NoAsciiInFile,
     WrongNumberOfLines,
     IncorrectRotorSettings,
     InvalidRotorValues,
-    WrongFileFormat,
+    WrongFileName,
     UndefinedFileName,
     FileNotFound
 )
@@ -16,10 +19,6 @@ from exceptions import (
 # Enigma welcome label
 from pyfiglet import Figlet
 text = Figlet(font='big')
-
-# function that
-def format_text(text):
-    return f'\n{text}'
 
 def design_assumptions(): #! przenieść do enigmy.py
     '''
@@ -41,10 +40,10 @@ def design_assumptions(): #! przenieść do enigmy.py
             f'{chr(62)} each value must be a number from range 1-26'
         ],
         ['Reflector',
-            f'{chr(62)} can be choosen from one of the options: A, B, C'
+            f'{chr(62)} must be inserted as one letter choosen from A, B, C'
         ],
         ['Save/Import Files',
-            f'{chr(62)} name can only consists of characters of the alphabet in range a-z and numbers'
+            f'{chr(62)} name can only consists of characters of the alphabet in range a-z and integer numbers'
         ],
         ['Imported .txt file',
             f'{chr(62)} must consists of characters of the alphabet in range a-z\n'+\
@@ -58,27 +57,56 @@ def design_assumptions(): #! przenieść do enigmy.py
     ]
     return assumpions_dist
 
+def check_if_rotor_values_are_correct(list_of_rotors):
+    '''
+    This function inspects how many settings were inserted,
+    and if values mets asumptions
+    '''
+    # check how many of the rotor settings were inserted
+    if len(list_of_rotors) != 3:
+        raise IncorrectRotorSettings('Incorrect number of settings was inserted')
+
+    # iterate through every rotor setting
+    for rotor in list_of_rotors:
+        # if setting is not a number and in range 1-26 raise exception
+        if int(rotor) not in range(1, 27):
+            raise InvalidRotorValues('Invalid rotor values')  # raise an error
+    # If all the values are correct, continue with the program
+    return True
+
 
 def format_to_dict(steckenbrett_str):
     '''
     Function is collecting inserted string values of conjugated letters
     that are separated by a coma. It converts them to a dictionary with
     key and value as conjugated letters. Function returns a dictionary.
+    This function also checks if letters inserted into steckerbrett
+    have no empty spaces.
     '''
     '''
     Values must be inserted like so AB,CD
     This function will convert str value to dictionary like: {'a': 'b', 'c': 'd'}
     '''
+    # create a new dictionary
     new_dict = {}
     # split pairs of letters separated by a coma and create a list
     list_of_letter_pairs = steckenbrett_str.split(",")
+
     # iterate through a list containing letters
-    for letters in list_of_letter_pairs:
+    for letter_pair in list_of_letter_pairs:
+        # checks if there is blank space in a pair of letters
+        # I did not implement another function to check that condition,
+        # because it is connected with the code in this function
+        if " " in letter_pair:
+            # raise an exception about wrong Steckerbrett formating
+            raise SteckerbrettWrongFormat('Steckerbrett has wrong format')
+
         # pairs of conjugated letters are updated into new dictionary
-        new_dict.update({letters[0]: letters[1]})
+        new_dict.update({letter_pair[0]: letter_pair[1]})
     return new_dict
 
-def steckerbrett_check_for_values(steckerbrett_dict):
+
+def steckerbrett_check_for_same_values(steckerbrett_dict):
     '''
     Steckerbrett cannot hold two same values.
     We need to check if it is true.
@@ -93,44 +121,63 @@ def steckerbrett_check_for_values(steckerbrett_dict):
             raise SteckerbrettRepeatedValues('Steckerbrett must have different values')
         else:
             # if key, value repetition has not been detected, append them into detection list
-            detected_values_keys.append(key, value)
+            detected_values_keys.extend([key, value])
     # return information that repetition of the values has not been detected
     return True
 
-
-def check_if_rotors_values_are_correct(list_of_rotors):
+def steckerbrett_check_if_value_in_text(steckerbrett_dict, text):
     '''
-    This function inspects how many settings were inserted,
-    and if values mets asumptions
+    This function checks if characters inserted into steckerbrett's pairs
+    as a first letter of a pair is in the Text. Boolean value True is returned
+    if all keys are also in Text.
     '''
-    # check how many of the rotor settings were inserted
-    if len(list_of_rotors) != 3:
-        raise IncorrectRotorSettings('Incorrect number of settings was inserted')
+    '''
+    Steckerbrett's keys are suppose to represent a letter in inserted text,
+    that will be replaced with different one.
+    '''
 
-    # iterate through every rotor setting
-    for rotor in list_of_rotors:
-        # if setting is not a number and in range 1-26 raise exception
-        if int(rotor) not in range(1,27):
-            raise InvalidRotorValues('Invalid rotor values')  # raise an error
-    # If all the values are correct, continue with the program
+    # iterate through keys of steckerbrett dictionary
+    for key in steckerbrett_dict.keys():
+        if key not in text:
+            raise SteckerbrettNotInText('\n\
+                Steckerbrett contains characters not seen in inserted text\
+                \n')
+
+    # return information that repetition of the values has not been detected
     return True
 
+def reflector_check_for_value(reflector):
+    '''Returns Boolean Value True if inserted reflector value
+    matches reflectors specified in the project'''
+    list_of_supported_reflectors = ['A', 'B', 'C']
+    if reflector not in list_of_supported_reflectors:
+        raise ReflectorValueIsUndefined('Inserted Reflector Value is Undefined')
+    else:
+        return True
 
-def enter_settings_by_hand():
+def enter_settings_by_hand(ciphered_text):
     '''
     This function is executed when user wants to enter enigma settings by hand
     '''
-    steckerbrett = input(format_text('Insert Steckerbreit values that you want to switch in format "AB,CD": '))
-    if steckerbrett:  # if steckerbrett is not empty, format to dictionary
-        steckerbrett = format_to_dict(steckerbrett)
+    steckerbrett = input(f'\nInsert Steckerbreit values that you want to switch in format "AB,CD": '))
+    if steckerbrett:  # if steckerbrett is not empty, check assumptions
+        # string characters are converted into dictionary
+        # and its checked if inserted steckerbrety has empty spaces
+        steckerbrett_dict = format_to_dict(steckerbrett)
 
-    rotors = input(format_text('Insert three rotor settings separated by coma (numbers 1-26): '))
+    rotors = input(f'\nInsert three rotor settings separated by coma (numbers 1-26): '))
     list_of_rotors = rotors.split(',')
 
-    reflector = input(format_text('Which reflector would you like to choose? (A, B, C): '))
-    #implement checking reflector value
+    reflector = input(f'\nWhich reflector would you like to choose? (A, B, C): '))
+    # implement checking reflector value
 
-    if (check_if_rotors_values_are_correct(list_of_rotors)):
+    # All inputs are checked for design assumptions
+    if (
+        check_if_rotor_values_are_correct(list_of_rotors) and
+        steckerbrett_check_if_value_in_text(steckerbrett_dict, ciphered_text)
+        and steckerbrett_check_for_same_values(steckerbrett_dict)
+        and reflector_check_for_value(reflector)
+    ):
         return int(list_of_rotors[0]), int(list_of_rotors[1]), int(list_of_rotors[2]), steckerbrett, reflector
     # if assumptions are not met, proper exception will be raised inside "check_if_rotors_values_are_correct" function
 
@@ -147,13 +194,13 @@ def main():
     '''
     try:
         print(text.renderText('Enigma Simulator'))
-        options = [['1. Read text from file','2. Enter own text','3. View design assumptions of the simulator']]
+        options = [['1. Read text from file', '2. Enter own text', '3. View design assumptions of the simulator']]
         print(tabulate(options, tablefmt='fancy_grid'))
-        choice = int(input(format_text('Insert a number of option that you want to use: ')))
+        choice = int(input(f'\nInsert a number of option that you want to use: ')))
         # if choice is empty or is not a number, exception ValueError will be raised,
         # indicating that no number was inserted
         if choice == 1:
-            input_file = input(format_text('Write file path with extension .txt to insert into Enigma: '))
+            input_file = input(f'\nWrite file path with extension .txt to insert into Enigma: '))
             # if is not empty
             if input_file:
                 ciphered_text = read_txt_file(input_file)
@@ -163,7 +210,7 @@ def main():
 
         elif choice == 2:
             # user inserts own text
-            ciphered_text = input(format_text('Write message that you want to insert into Enigma: ')).upper()
+            ciphered_text = input(f'\nWrite message that you want to insert into Enigma: ')).upper()
 
             # if inserted text contain no ascii characters, raise error
             if any(letter.isdigit() for letter in ciphered_text):
@@ -173,7 +220,7 @@ def main():
             print(tabulate(design_assumptions(), tablefmt='fancy_grid'))
 
             # user can restart program after reading desing assumptions
-            choice = input(format_text('When you are ready to restart the simulator type y: '))
+            choice = input(f'\nWhen you are ready to restart the simulator type y: '))
             if choice == 'y':
                 # restart main program
                 main()
@@ -185,10 +232,10 @@ def main():
         # User have a choice to import Enigma Simulator Settings from .json file.
         # If user chooses to import settings, he probably doesn't need to save them later in the program.
         # The choice will be remembered and used to initiate "save_json_file" block
-        choice_import_settings = input(format_text('Would you like to import Enigma settings from the json file? y/n: '))
+        choice_import_settings = input(f'\nWould you like to import Enigma settings from the json file? y/n: '))
         if choice_import_settings == 'y':
             '''Reading settings from to .json file'''
-            input_path = input(format_text('Write file path with extension .json to insert settings into Enigma: '))
+            input_path = input(f'\nWrite file path with extension .json to insert settings into Enigma: '))
             if input_path:
                 alpha, beta, gama, steckerbrett, reflector = read_json_file(input_path)
             else:  # if input_file is empty, raise error
@@ -197,7 +244,7 @@ def main():
         # settings must be inserted manualy
         elif choice_import_settings == 'n':
             # reads data entered by hand
-            alpha, beta, gama, steckerbrett, reflector = enter_settings_by_hand()
+            alpha, beta, gama, steckerbrett, reflector = enter_settings_by_hand(ciphered_text)
         else:
             raise UndefinedOption('Inserted option is undefined')
 
@@ -222,7 +269,7 @@ def main():
         '''Saving PART'''
 
         '''Saving message to .txt file'''
-        choice = input(format_text('Would you like to save this to the file? y/n: '))
+        choice = input(f'\nWould you like to save this to the file? y/n: '))
         if choice == 'y':
             save_txt_file(processed_text)
         elif choice == 'n':
@@ -231,14 +278,13 @@ def main():
             raise UndefinedOption('Inserted option is undefined')
 
         '''Saving settings of the simulator to .json file'''
-        choice = input(format_text('Would you like to save enigma settings to the file? y/n: '))
+        choice = input(f'\nWould you like to save enigma settings to the file? y/n: '))
         if choice == 'y':
             save_json_file(enigma)
         elif choice == 'n':
             pass  # continue with the program
         else:
             raise UndefinedOption('Inserted option is undefined')
-
 
         # print last message
         print('\nThank you for using my Enigma Machine Simulator')
@@ -248,7 +294,15 @@ def main():
         print(Message)
     except WrongNumberOfLines as Message:
         print(Message)
-    except WrongFileFormat as Message:
+    except WrongFileName as Message:
+        print(Message)
+    except SteckerbrettNotInText as Message:
+        print(Message)
+    except SteckerbrettRepeatedValues as Message:
+        print(Message)
+    except SteckerbrettWrongFormat as Message:
+        print(Message)
+    except ReflectorValueIsUndefined as Message:
         print(Message)
     except UndefinedFileName as Message:
         print(Message)
