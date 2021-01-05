@@ -1,4 +1,4 @@
-from enigma import Enigma
+from enigma_class import Enigma
 from file_management import read_txt_file, save_txt_file, save_json_file, read_json_file
 from tabulate import tabulate
 from exceptions import (
@@ -271,7 +271,7 @@ def main():
         #inverted = enigma.inverse_permutation(alpha)
         #print(inverted)
         '''Returning message'''
-        processed_text = enigma.encrypt(ciphered_text)
+        processed_text = enigma.encryptingCodec(ciphered_text)
         print(f'\nHere is encrypted message: {processed_text}')
 
         '''Saving PART'''

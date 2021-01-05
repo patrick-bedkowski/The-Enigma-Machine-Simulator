@@ -105,7 +105,7 @@ class Enigma:
         '''
         if self._reflector == "A":
             # holds ascii alphabet shifted 5 letters to the right
-            return self.shift(self._alphabet, -5)]
+            return self.shift(self._alphabet, -5)
         if self._reflector == "B":
             # holds ascii alphabet shifted 2 letters to the left
             return self.shift(self._alphabet, 2)
@@ -118,6 +118,7 @@ class Enigma:
         Returns letter corresponding to the index of a letter 
         in an alphabet hardcoded to the specific reflector.
         '''
+
         return self._reflector_alphabet[index]
 
     """def remove_interspace(self, text):
@@ -203,27 +204,30 @@ class Enigma:
         shifted_alphabet = self._alphabet[rotor:] + self._alphabet[:rotor]
         return shifted_alphabet
 
-    def steckerbrett_change_letters(self, input_letter):
+    def steckerbrett_change_letters(self, letter):
         '''
         If letter is in steckerbrett, switch it for the coressponding one
         '''
-        return self._steckerbrett[input_letter]
+        for key, value in self._steckerbrett.items():
+            if letter == key: 
+                letter = value
+            elif letter == value:
+                letter = key
+            else:
+                continue
+            # if no matches have been found, letter will not be changed
+        return letter
 
-    def encrypt(self, ciphered_text):
+    def encryptingCodec(self, inserted_text):
         '''
         Returns modified ciphered_text.
         '''
-        encrypted_text = []
-        for letter in ciphered_text:
+        ciphered_text = []
+        for letter in inserted_text:
             
             # if steckerbrett holds values
             if self._steckerbrett:
-                if letter in self._steckerbrett.keys():
-                    letter = self.steckerbrett_change_letters(letter)
-                    '''if letter in self._steckerbrett.values():
-                        letter = self._steckerbrett[letter]
-                    elif letter in self._steckerbrett.keys():
-                        letter = next(k for k, v in self._steckerbrett.items() if v == letter)'''
+                letter = self.steckerbrett_change_letters(letter)
 
             '''Encrypt by the rotors'''
             self.turn_rotors()
@@ -239,22 +243,12 @@ class Enigma:
             next_letter = self.inverse_permutation(self._beta)[self._alphabet.index(next_letter)]
             next_letter = self.inverse_permutation(self._alpha)[self._alphabet.index(next_letter)]
 
-            encrypted_text.append(next_letter)
-        """
-        Add the interspaces
-        if self._index_of_interspace:  # if not empty
-            for index in range(0, len(self._index_of_interspace)):
-                encrypted_text.insert(self._index_of_interspace[index], " ")"""
+            # Once again conjugated letters need to be checked 
+            if self._steckerbrett:
+                next_letter = self.steckerbrett_change_letters(next_letter)
 
-        '''Return Result'''
-        return("".join(encrypted_text))
-
-"""def shift_letter(alphabet):
-    #shifting letters to to the left by k times
-    alphabet.reverse()
-    return alphabet
-
-alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-
-print(' '.join(alphabet))
-print(' '.join(shift_letter(alphabet)))"""
+            # append encripted letter to ciphered_text
+            ciphered_text.append(next_letter)
+        
+        '''Return Modified'''
+        return("".join(ciphered_text))

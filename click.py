@@ -1,17 +1,22 @@
 from string import ascii_uppercase
 
 alphabet = [letter for letter in ascii_uppercase]
-print(alphabet)
 
 def shift(seq, n):
     return seq[n:] + seq[:n]
 
-print(shift(alphabet, 1))
 letter = 'A'
-print(alphabet.index(letter))
+reflector_alphabet = shift(alphabet, 3) 
+reversed_a = reflector_alphabet[::-1]
 
-next_letter = shift(alphabet, 1)[alphabet.index(letter)]
-print(next_letter)
+def reflect_letter(index):
+    return reflector_alphabet[index]
+
+litera = reflect_letter(reversed_a.index(letter))
+print(letter)
+print(reflector_alphabet)
+print(reversed_a)
+print(litera)
 '''detected_values_keys = []
 
 key = 'A'

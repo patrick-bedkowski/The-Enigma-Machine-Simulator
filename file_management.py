@@ -7,7 +7,7 @@ from exceptions import (
     FileNotFound
 )
 import json
-from enigma import Enigma
+from enigma_class import Enigma
 
 '''IS THIS OPTIMAl???'''
 def check_if_ascii(letter):  # checks if input is in ascii uppercases

@@ -1,4 +1,4 @@
-from enigma import Enigma
+from enigma_class import Enigma
 
 def test_normal_insert():
     alpha = 5
@@ -143,5 +143,27 @@ def test_turn_rotors_border_value_all_rotors():
 def test_steckerbrett_change_letters():
     enigma = Enigma(steckerbrett = {'A': 'B', 'C': 'D'})
     assert enigma.steckerbrett_change_letters('A') == 'B'
-    assert enigma.steckerbrett_change_letters('C') == 'D'
-    
+    assert enigma.steckerbrett_change_letters('D') == 'C'
+    assert enigma.steckerbrett_change_letters('E') == 'E'
+
+def test_encrypt_message():
+    alpha = 5
+    beta = 17
+    gama = 24
+    steckerbrett = {'O': 'Z', 'B': 'D'}
+    reflector = 'A'
+    text = 'BACKTOSCHOOL'
+    enigma = Enigma(alpha, beta, gama, steckerbrett, reflector)
+
+    assert enigma.encryptingCodec(text) == 'CHHDUQORZYAQ'
+
+def test_decrypt_message():
+    alpha = 5
+    beta = 17
+    gama = 24
+    steckerbrett = {'O': 'Z', 'B': 'D'}
+    reflector = 'A'
+    text = 'CHHDUQORZYAQ'
+    enigma = Enigma(alpha, beta, gama, steckerbrett, reflector)
+
+    assert enigma.encryptingCodec(text) == 'BACKTOSCHOOL'
