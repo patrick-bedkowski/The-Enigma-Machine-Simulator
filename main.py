@@ -27,7 +27,7 @@ def design_assumptions(): #! przenieść do enigmy.py
     '''
     assumpions_dist = [
         ['Text',
-            f'{chr(62)} can be inserted as lowercases or uppercases\n'+\
+            f'{chr(62)} must be inserted as uppercases characters\n'+\
             f'{chr(62)} must only contain characters of the alphabet in range a-z'
         ],
         ['Steckenbrett',
@@ -108,8 +108,9 @@ def format_to_dict(steckenbrett_str):
 
 def steckerbrett_check_for_same_values(steckerbrett_dict):
     '''
-    Steckerbrett cannot hold two same values.
-    We need to check if it is true.
+    Steckerbrett cannot hold two same values. This function checks if
+    a character is repeated, either as a key or a value. Return True if
+    there is no duplicates
     '''
     # create a list where detected values, keys are stored
     detected_values_keys = []
@@ -125,13 +126,15 @@ def steckerbrett_check_for_same_values(steckerbrett_dict):
     # return information that repetition of the values has not been detected
     return True
 
+# This is redundant
 def steckerbrett_check_if_value_in_text(steckerbrett_dict, text):
     '''
-    This function checks if characters inserted into steckerbrett's pairs
-    as a first letter of a pair is in the Text. Boolean value True is returned
+    This function checks if characters inserted into steckerbrett pairs'
+    as first letter is in the Inserted text. Boolean value True is returned
     if all keys are also in Text.
     '''
-    '''
+    '''e.g. Inserted text: "SCHOOL" and Steckerbrett "AS,SL" is wrong,
+    because letter A is not in the inserted text.
     Steckerbrett's keys are suppose to represent a letter in inserted text,
     that will be replaced with different one.
     '''
@@ -146,7 +149,7 @@ def steckerbrett_check_if_value_in_text(steckerbrett_dict, text):
     # return information that repetition of the values has not been detected
     return True
 
-def reflector_check_for_value(reflector):
+def reflector_check_model(reflector):
     '''Returns Boolean Value True if inserted reflector value
     matches reflectors specified in the project'''
     list_of_supported_reflectors = ['A', 'B', 'C']
@@ -159,24 +162,29 @@ def enter_settings_by_hand(ciphered_text):
     '''
     This function is executed when user wants to enter enigma settings by hand
     '''
-    steckerbrett = input(f'\nInsert Steckerbreit values that you want to switch in format "AB,CD": '))
+    steckerbrett = input(f'\nInsert Steckerbreit values that you want to switch in format "AB,CD": ')
     if steckerbrett:  # if steckerbrett is not empty, check assumptions
         # string characters are converted into dictionary
         # and its checked if inserted steckerbrety has empty spaces
-        steckerbrett_dict = format_to_dict(steckerbrett)
+        steckerbrett = format_to_dict(steckerbrett)
+        # All inputs are checked for design assumptions
+        '''if (
+            steckerbrett_check_if_value_in_text(steckerbrett, ciphered_text)
+            and steckerbrett_check_for_same_values(steckerbrett)
+        ):'''
+        if steckerbrett_check_for_same_values(steckerbrett):
+            pass
 
-    rotors = input(f'\nInsert three rotor settings separated by coma (numbers 1-26): '))
+    rotors = input(f'\nInsert three rotor settings separated by coma (numbers 1-26): ')
     list_of_rotors = rotors.split(',')
 
-    reflector = input(f'\nWhich reflector would you like to choose? (A, B, C): '))
+    reflector = input(f'\nWhich reflector would you like to choose? (A, B, C): ')
     # implement checking reflector value
 
     # All inputs are checked for design assumptions
     if (
-        check_if_rotor_values_are_correct(list_of_rotors) and
-        steckerbrett_check_if_value_in_text(steckerbrett_dict, ciphered_text)
-        and steckerbrett_check_for_same_values(steckerbrett_dict)
-        and reflector_check_for_value(reflector)
+        check_if_rotor_values_are_correct(list_of_rotors)
+        and reflector_check_model(reflector)
     ):
         return int(list_of_rotors[0]), int(list_of_rotors[1]), int(list_of_rotors[2]), steckerbrett, reflector
     # if assumptions are not met, proper exception will be raised inside "check_if_rotors_values_are_correct" function
@@ -196,11 +204,11 @@ def main():
         print(text.renderText('Enigma Simulator'))
         options = [['1. Read text from file', '2. Enter own text', '3. View design assumptions of the simulator']]
         print(tabulate(options, tablefmt='fancy_grid'))
-        choice = int(input(f'\nInsert a number of option that you want to use: ')))
+        choice = int(input(f'\nInsert a number of option that you want to use: '))
         # if choice is empty or is not a number, exception ValueError will be raised,
         # indicating that no number was inserted
         if choice == 1:
-            input_file = input(f'\nWrite file path with extension .txt to insert into Enigma: '))
+            input_file = input(f'\nWrite file path with extension .txt to insert into Enigma: ')
             # if is not empty
             if input_file:
                 ciphered_text = read_txt_file(input_file)
@@ -210,7 +218,7 @@ def main():
 
         elif choice == 2:
             # user inserts own text
-            ciphered_text = input(f'\nWrite message that you want to insert into Enigma: ')).upper()
+            ciphered_text = input(f'\nWrite message that you want to insert into Enigma: ')
 
             # if inserted text contain no ascii characters, raise error
             if any(letter.isdigit() for letter in ciphered_text):
@@ -220,7 +228,7 @@ def main():
             print(tabulate(design_assumptions(), tablefmt='fancy_grid'))
 
             # user can restart program after reading desing assumptions
-            choice = input(f'\nWhen you are ready to restart the simulator type y: '))
+            choice = input(f'\nWhen you are ready to restart the simulator type y: ')
             if choice == 'y':
                 # restart main program
                 main()
@@ -232,10 +240,10 @@ def main():
         # User have a choice to import Enigma Simulator Settings from .json file.
         # If user chooses to import settings, he probably doesn't need to save them later in the program.
         # The choice will be remembered and used to initiate "save_json_file" block
-        choice_import_settings = input(f'\nWould you like to import Enigma settings from the json file? y/n: '))
+        choice_import_settings = input(f'\nWould you like to import Enigma settings from the json file? y/n: ')
         if choice_import_settings == 'y':
             '''Reading settings from to .json file'''
-            input_path = input(f'\nWrite file path with extension .json to insert settings into Enigma: '))
+            input_path = input(f'\nWrite file path with extension .json to insert settings into Enigma: ')
             if input_path:
                 alpha, beta, gama, steckerbrett, reflector = read_json_file(input_path)
             else:  # if input_file is empty, raise error
@@ -264,12 +272,12 @@ def main():
         #print(inverted)
         '''Returning message'''
         processed_text = enigma.encrypt(ciphered_text)
-        print(format_text(f'Here is encrypted message: {processed_text}'))
+        print(f'\nHere is encrypted message: {processed_text}')
 
         '''Saving PART'''
 
         '''Saving message to .txt file'''
-        choice = input(f'\nWould you like to save this to the file? y/n: '))
+        choice = input(f'\nWould you like to save this to the file? y/n: ')
         if choice == 'y':
             save_txt_file(processed_text)
         elif choice == 'n':
@@ -278,7 +286,7 @@ def main():
             raise UndefinedOption('Inserted option is undefined')
 
         '''Saving settings of the simulator to .json file'''
-        choice = input(f'\nWould you like to save enigma settings to the file? y/n: '))
+        choice = input(f'\nWould you like to save enigma settings to the file? y/n: ')
         if choice == 'y':
             save_json_file(enigma)
         elif choice == 'n':

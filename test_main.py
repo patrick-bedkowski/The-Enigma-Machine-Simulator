@@ -1,4 +1,4 @@
-from main import check_if_rotors_values_are_correct
+'''from main import check_if_rotors_values_are_correct
 import pytest
 
 def test_correct_rotors_setting():
@@ -17,3 +17,4 @@ def test_not_enough_rotor_settings():
     with pytest.raises(ValueError):
         rotors = '20,9'
         check_if_rotors_values_are_correct(rotors)
+'''
