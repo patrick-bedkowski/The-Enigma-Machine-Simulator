@@ -105,7 +105,10 @@ class enigma_interface:
                 print(self._option)
         # if loop is finished, go to the setting menu
         self.setting_menu()
-        
+    
+    def input_txt_file_gui(self, path_from_gui):
+        ciphered_text = read_txt_file(path_from_gui)
+        return ciphered_text
     
     def input_txt_file(self):
         '''User chooses to import file'''
@@ -196,6 +199,13 @@ class enigma_interface:
             except FileNotFound as Message:
                 print(f'{Message}. {self._insert_file_path}')
     
+    def input_json_file_gui(self, path_from_gui):
+        if path_from_gui:
+            alpha, beta, gama, steckerbrett, reflector = read_json_file(path_from_gui)
+            return alpha, beta, gama, steckerbrett, reflector
+        else:  # if input_file is empty, raise error
+            raise FileNotFound('File was not found')
+
     def insert_settings_by_hand(self):
         '''
         Returns values of rotors in a list, steckerbrett as dictionary, reflector as str

@@ -7,10 +7,30 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from main import enigma_interface, format_to_dict
+from enigma_class import Enigma
+
+from exceptions import (
+    UndefinedOption,
+    SteckerbrettRepeatedValues,
+    SteckerbrettWrongFormat,
+    SteckerbrettNotInText,
+    ReflectorValueIsUndefined,
+    NoAsciiDetected,
+    WrongNumberOfLines,
+    InvalidRotorValues,
+    WrongFileName,
+    UndefinedFileName,
+    FileNotFound,
+    NoReflectorSelected,
+    InvalidRotorQuantity,
+    NoTextToProcess
+)
 
 class EnigmaUi(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
+        self.enigma_interface = enigma_interface(Enigma)
 
     def setupUi(self, Enigma_ui):
         Enigma_ui.setObjectName("Enigma_ui")
@@ -334,6 +354,16 @@ class EnigmaUi(QtWidgets.QMainWindow):
         self.export_button_json.setEnabled(False)
         self.export_button_txt.setEnabled(False)
 
+        # Set path to inserted files as empty strings
+        self.txtBrowseFileName = ""
+        self.jsonBrowseFileName = ""
+        # GET path to inserted files
+        self.browse_button_txt.clicked.connect(self.getTxtFile)
+        self.browse_button_json.clicked.connect(self.getJsonFile)
+
+        '''START ENIGMA SIMULATOR'''
+        self.start_button.clicked.connect(self.export_data)
+
         '''For each rotor, create item 26 times'''
         '''looks cleaner, then code created automatically by QTDesigner'''
         for number in range(0,26):
@@ -346,54 +376,138 @@ class EnigmaUi(QtWidgets.QMainWindow):
         self.rotor_layout.addLayout(self.rotor_settings_layout)
         self.retranslateUi(Enigma_ui)
         QtCore.QMetaObject.connectSlotsByName(Enigma_ui)
+        
 
-
-
-
-    def runProgram(self):
+    def run_program(self):
         '''
-        Main program. First files and settings are send into main.py program
+        Main program. First files and settings are send into enigma_gui.py program
         '''
 
+        # if user imported .json file with settings, other settings that 
+        # was inserted will not be inserted into enigma simulator
+        #if not self.jsonBrowseFileName:
         '''
-        Browse files
+        Getting values from inserted boxes
         '''
-        txtBrowseFileName = self.browse_button_txt.clicked.connect(self.getTxtFile)
-        jsonBrowseFileName = self.browse_button_json.clicked.connect(self.getJsonFile)
+        self.get_rotor_values_from_combo_boxes()
 
-        # Enable buttons, AT THE BOTTOM
+        # GET VALUE from STECKERBRETT EditLine
+        self.steckerbrett = self.steckerbrett_values.text()
+
+        # GET VALUE from REFLECTOR combobox
+        self.reflector = self.reflector_combo.currentText()
+
+        # Print inserted values to user
+        self.debugTextBrowser.setText(
+            f'{self.alpha},\
+            {self.beta},\
+            {self.gama},\
+            {self.steckerbrett},\
+            {self.reflector},\
+            {self.jsonBrowseFileName}\
+            {self.txtBrowseFileName}'
+        )
+        
+        # If inserted path to .txt file is not empty:
+        try:
+            ciphered_text = self.enigma_interface.input_txt_file_gui(self.txtBrowseFileName)
+        except FileNotFoundError as Message:
+            self.print_messages(Message)
+        except FileNotFound as Message:
+            self.print_messages(Message)
+        except WrongNumberOfLines as Message:
+            self.print_messages(Message)
+        except NoTextToProcess as Message:
+            self.print_messages(Message)
+        except NoAsciiDetected as Message:
+            self.print_messages(Message)
+
+        # If inserted path to .json file is not empty:
+        if self.jsonBrowseFileName:
+            try:
+                self.alpha, self.beta, self.gama, self.steckerbrett, self.reflector = self.enigma_interface.input_json_file_gui(self.jsonBrowseFileName)
+            except FileNotFound as Message:
+                self.print_messages(Message)
+
+        self.steckerbrett_format_dict()
+
+        enigma = Enigma(self.alpha, self.beta, self.gama, self.steckerbrett, self.reflector)
+        processed_text = enigma.encryptingCodec(ciphered_text)
+        self.print_messages(processed_text)
+
+
+        # Enable EXPORT buttons
         self.export_button_json.setEnabled(True)
         self.export_button_txt.setEnabled(True)
 
+    def steckerbrett_format_dict(self):
+        try:
+            self.steckerbrett = format_to_dict(self.steckerbrett)
+        except SteckerbrettWrongFormat as Message:
+            self.print_messages(Message)
+
+
+    def export_data(self):
+        self.start_button_clicked = True
+        self.run_program()
+        data = self.return_data()
+        return data
+
+    def return_data(self):
+        '''Returnes all initial data insertet by the user, as a list'''
+        data_to_return = [
+            self.alpha,
+            self.beta,
+            self.gama,
+            self.steckerbrett,
+            self.reflector
+        ]
+        return data_to_return
+
+    '''Get values inserted into combo boxes '''
+    def get_rotor_values_from_combo_boxes(self):
+        '''Returns values selected from comboboxes'''
+        self.alpha = self.alpha_combo.currentText()
+        self.beta = self.beta_combo.currentText()
+        self.gama = self.gama_combo.currentText()
+
+    def print_messages(self, message):
+        '''Shows text to user'''
+        self.debugTextBrowser.setText(str(message))
+
+
+    '''EXPORT FILES'''
+    def export_files(self):
         '''
         Export files
         '''
-        tsonExportFileName = self.export_button_json.clicked.connect(self.getSaveFileNameJson)
-        txtExportFileName = self.export_button_txt.clicked.connect(self.getSaveFileNameTxt)
+        # MOBE TO DIFFERENT METHOD
+        self.export_button_json.clicked.connect(self.getSaveFileNameJson)
+        self.export_button_txt.clicked.connect(self.getSaveFileNameTxt)
 
     '''
-        Browse/Import Button Functions
+    Browse/Import Button Functions
     '''
 
     def getTxtFile(self):
         filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', '','Text file (*.txt)')
         self.browse_line_txt.setText(filename[0])
-        return filename
+        self.txtBrowseFileName = filename[0]
 
     def getJsonFile(self):
         filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', '','Json file (*.json)')
         self.browse_line_json.setText(filename[0])
-        return filename
+        self.jsonBrowseFileName = filename[0]
 
     def getSaveFileNameTxt(self):
         filename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', '','Text file (*.txt)')
         self.export_line_txt.setText(filename[0])
-        return filename
+        self.txtExportFileName = filename[0]
 
     def getSaveFileNameJson(self):
         filename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', '','Json file (*.json)')
         self.export_line_json.setText(filename[0])
-        return filename
+        self.jsonExportFileName = filename[0]
 
     def retranslateUi(self, Enigma_ui):
         _translate = QtCore.QCoreApplication.translate
