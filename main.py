@@ -268,20 +268,30 @@ class enigma_interface:
     '''Initiating program'''
     def initiate_enigma_simulator(self, alpha, beta, gama, steckenbrett, reflector, ciphered_text):
         '''Enigma Machine Simulator'''
+        '''Here's main algorythm'''
         # create object of Enigma class
-        enigma = Enigma(alpha, beta, gama, steckenbrett, reflector)
-        processed_text = enigma.encryptingCodec(ciphered_text)
-        print(f'\nHere is your encrypted message: {processed_text}')
+        try:
+            enigma = Enigma(alpha, beta, gama, steckenbrett, reflector)
+            processed_text = enigma.encryptingCodec(ciphered_text)
+            print(f'\nHere is your encrypted message: {processed_text}')
 
-        # Exporting files requires
-        # processed text and initial settings 
-        self.export_txt_menu(processed_text)
-        # If user chosed not to import settings from file
-        # Exporting settings inserted by hand is available 
-        if self.choice_import_settings == 'n':
-            self.export_json_menu(enigma.initial_settings)
-        # print last message
-        print('\nThank you for using my Enigma Machine Simulator')
+            # Exporting files requires
+            # processed text and initial settings 
+            self.export_txt_menu(processed_text)
+            # If user chosed not to import settings from file
+            # Exporting settings inserted by hand is available 
+            if self.choice_import_settings == 'n':
+                self.export_json_menu(enigma.initial_settings)
+            # print last message
+            print('\nThank you for using my Enigma Machine Simulator')
+        except InvalidRotorValues as Message:
+            if self.choice_import_settings == 'y':
+                print(f'{Message}. Seems like imported file contain incorrect rotor value.'+\
+                    '\nPlease restart program with correct settings')
+            elif self.choice_import_settings == 'n':
+                print(f'{Message}. Insert proper values again.')
+                # user must insert all settings again
+                self.initiate_enigma_simulator(self.insert_settings_by_hand())
     
     '''
     TXT FILE EXPORTING PART

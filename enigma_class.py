@@ -1,8 +1,7 @@
 from string import ascii_uppercase
+from exceptions import (InvalidRotorValues)
 
 class Enigma:
-
-    # NAPRAW Reflector
 
     # CZY mogę przyjąć założenie, że użytkownik nie przygotuje sam pliki z błędnymi ustawieniami?
     # WHEN YOU IMPORT SETTINGS TO ENIGMA, PROGRAM ASSUMES THAT YOU WANT TO READ CIPHERED TEXT,
@@ -39,9 +38,11 @@ class Enigma:
         Atribute is holding list consisting of ascii_uppercase values
         '''
         self._alphabet = [letter for letter in ascii_uppercase]
-        self._alpha = int(alpha)
-        self._beta = int(beta)
-        self._gama = int(gama)
+        '''Checks rotor values'''
+        self._alpha = self.check_set_rotor_value(alpha)
+        self._beta = self.check_set_rotor_value(beta)
+        self._gama = self.check_set_rotor_value(gama)
+
         self._steckerbrett = steckerbrett
         self._reflector = reflector
         # initiate reflector attribute
@@ -66,6 +67,15 @@ class Enigma:
 
     def reflector(self):
         return self._reflector
+
+    def check_set_rotor_value(self, rotor):
+        try:
+            if int(rotor) not in range (1,27):
+                raise InvalidRotorValues('Invalid rotor values')
+            else:
+                return int(rotor)
+        except ValueError:
+            raise InvalidRotorValues('Invalid rotor values')
 
     def initial_settings(self):
         '''
