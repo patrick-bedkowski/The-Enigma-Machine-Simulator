@@ -1,6 +1,6 @@
 from string import ascii_uppercase
 from exceptions import (
-    NoAsciiInFile,
+    NoAsciiDetected,
     WrongFileName,
     WrongNumberOfLines,
     UndefinedFileName,
@@ -41,7 +41,7 @@ def read_txt_file(input_file):
                         if check_if_ascii(letter):
                             data.append(letter)
                         else:
-                            raise NoAsciiInFile('No ascii characters were inserted')
+                            raise NoAsciiDetected('No ascii characters were inserted')
                 return(''.join(data))  # return text
             else:
                 raise WrongNumberOfLines('Files contains more than one line') # wrong format of the file
@@ -88,7 +88,7 @@ def save_txt_file(text):
 .json file operations
 '''
 
-def save_json_file(enigma):
+def save_json_file(settings):
     '''
     This function saves all the initial settings of the enigma
     machine to the json file
@@ -107,7 +107,7 @@ def save_json_file(enigma):
 
     #File is created
     with open(f'{name_of_the_file}.json', 'w') as filehandle:
-        json.dump(enigma.initial_settings(), filehandle)
+        json.dump(settings, filehandle)
 
 
     # Proper message is displayed

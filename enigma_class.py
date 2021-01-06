@@ -39,9 +39,9 @@ class Enigma:
         Atribute is holding list consisting of ascii_uppercase values
         '''
         self._alphabet = [letter for letter in ascii_uppercase]
-        self._alpha = alpha
-        self._beta = beta
-        self._gama = gama
+        self._alpha = int(alpha)
+        self._beta = int(beta)
+        self._gama = int(gama)
         self._steckerbrett = steckerbrett
         self._reflector = reflector
         # initiate reflector attribute
