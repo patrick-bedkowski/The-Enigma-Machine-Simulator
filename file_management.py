@@ -4,7 +4,8 @@ from exceptions import (
     WrongFileName,
     WrongNumberOfLines,
     UndefinedFileName,
-    FileNotFound
+    FileNotFound,
+    NoTextToProcess
 )
 import json
 from enigma_class import Enigma
@@ -34,17 +35,22 @@ def read_txt_file(input_file):
     try:
         with open(input_file, "r") as file:  # open file
             lines = file.readlines()  # file's lines
-            if int(len(lines)) == 1:  # if there is only one line in file
-                data = []
-                for line in lines:
-                    for letter in line:
-                        if check_if_ascii(letter):
-                            data.append(letter)
-                        else:
-                            raise NoAsciiDetected('No ascii characters were inserted')
-                return(''.join(data))  # return text
+            # if any line from file is an empty line, release 
+            if any(len(line.strip()) == 0 for line in lines):
+                raise NoTextToProcess('No text was inserted')
             else:
-                raise WrongNumberOfLines('Files contains more than one line') # wrong format of the file
+                if int(len(lines)) == 1:  # if there is only one line in file
+                    data = []
+                    for line in lines:
+                        for letter in line:
+                            if check_if_ascii(letter):
+                                data.append(letter)
+                            else:
+                                raise NoAsciiDetected('No ascii characters were inserted')
+                    text = ''.join(data)
+                    return text # return text
+                else:
+                    raise WrongNumberOfLines('Files does not contain one line. Format it or choose a different one') 
     except FileNotFoundError:
         raise FileNotFound('File was not found')
 

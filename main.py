@@ -22,7 +22,8 @@ from exceptions import (
     UndefinedFileName,
     FileNotFound,
     NoReflectorSelected,
-    InvalidRotorQuantity
+    InvalidRotorQuantity,
+    NoTextToProcess
 )
 
 # Enigma welcome label
@@ -123,6 +124,8 @@ class enigma_interface:
                 print(f'{Message}. {self._insert_file_path}')
             except WrongNumberOfLines as Message:
                 print(f'{Message}. {self._insert_file_path}')
+            except NoTextToProcess as Message:
+                    print(f'{Message}. Please, insert file with message')
             except NoAsciiDetected as Message:
                 print(f'{Message}. {self._insert_file_path}')
     
@@ -135,12 +138,17 @@ class enigma_interface:
                 self.start_menu()
                 break
             try:
-                # if inserted text contains characters not from uppercase ascii alphabet,
-                # raise an error
-                if any(letter not in ascii_uppercase for letter in input_txt):
-                    raise NoAsciiDetected('No ascii characters were inserted')
+                if input_txt:
+                    # if inserted text contains characters not from uppercase ascii alphabet,
+                    # raise an error
+                    if any(letter not in ascii_uppercase for letter in input_txt):
+                        raise NoAsciiDetected('No ascii characters were inserted')
+                    else:
+                        return input_txt
                 else:
-                    return input_txt       
+                    raise NoTextToProcess('No text was inserted')
+            except NoTextToProcess as Message:
+                    print(f'{Message}. Please, insert message again')
             except NoAsciiDetected as Message:
                     print(f'{Message}. Please, insert message again')
 
