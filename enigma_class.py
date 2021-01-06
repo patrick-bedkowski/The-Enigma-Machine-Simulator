@@ -1,5 +1,5 @@
 from string import ascii_uppercase
-from exceptions import (InvalidRotorValues)
+from exceptions import (InvalidRotorValues, SteckerbrettRepeatedValues)
 
 class Enigma:
 
@@ -43,8 +43,14 @@ class Enigma:
         self._beta = self.check_set_rotor_value(beta)
         self._gama = self.check_set_rotor_value(gama)
 
-        self._steckerbrett = steckerbrett
-        self._reflector = reflector
+        # If steckerbrett has been inserted, check its content
+        if steckerbrett:
+            if self.steckerbrett_check_for_same_values(steckerbrett):
+                self._steckerbrett = steckerbrett
+        else:
+            self._steckerbrett = steckerbrett
+        if (self.reflector_check_model(reflector)):
+            self._reflector = reflector
         # initiate reflector attribute
         self._reflector_alphabet = self.initaite_reflector()
 
@@ -76,6 +82,40 @@ class Enigma:
                 return int(rotor)
         except ValueError:
             raise InvalidRotorValues('Invalid rotor values')
+    
+
+    '''Steckerbrett'''
+    def steckerbrett_check_for_same_values(self, steckerbrett_dict):
+        '''
+        Steckerbrett cannot hold two same values. This function checks if
+        a character is repeated, either as a key or a value. Return True if
+        there is no duplicates
+        '''
+        # create a list where detected values, keys are stored
+        detected_values_keys = []
+
+        # iterate through keys, values
+        for key, value in steckerbrett_dict.items():
+            # if key, value is the same as in the detection list, raise an error
+            if key in detected_values_keys and value in detected_values_keys:
+                raise SteckerbrettRepeatedValues('Steckerbrett must have different values')
+            else:
+                # if key, value repetition has not been detected, append them into detection list
+                detected_values_keys.extend([key, value])
+        # return information that repetition of the values has not been detected
+        return True
+    
+    '''Reflector'''
+
+    def reflector_check_model(self, reflector):
+        '''Returns Boolean Value True if inserted reflector value
+        matches reflectors specified in the project'''
+        list_of_supported_reflectors = ['A', 'B', 'C']
+        if reflector not in list_of_supported_reflectors:
+            raise ReflectorValueIsUndefined('Inserted Reflector Value is Undefined')
+        else:
+            return True
+
 
     def initial_settings(self):
         '''

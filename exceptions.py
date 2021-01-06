@@ -67,11 +67,6 @@ class FileNotFound(ValueError):
     def __init__(self, input_file):
         super().__init__('\n> File was not found')
         self.input_file = input_file
-
-class IncorrectRotorSettings(ValueError):
-    def __init__(self, rotors):
-        super().__init__('\n> Incorrect number of settings was inserted')
-        self.rotors = rotors
     
 class InvalidRotorValues(ValueError):
     def __init__(self, rotors):

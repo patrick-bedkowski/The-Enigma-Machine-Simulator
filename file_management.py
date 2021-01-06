@@ -8,7 +8,6 @@ from exceptions import (
     NoTextToProcess
 )
 import json
-from enigma_class import Enigma
 
 '''IS THIS OPTIMAl???'''
 def check_if_ascii(letter):  # checks if input is in ascii uppercases
@@ -134,4 +133,3 @@ def read_json_file(path):
             return rotors[0], rotors[1], rotors[2], steckenbrett, reflector
     except FileNotFound:
         raise FileNotFound('File was not found')
-
