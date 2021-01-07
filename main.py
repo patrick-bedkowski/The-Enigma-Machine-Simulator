@@ -105,7 +105,9 @@ class enigma_interface:
             else:
                 print(self._option)
         # if loop is finished, go to the setting menu
+        # DOESNT LOOK NICE
         self.setting_menu()
+        self.initiate_program()
     
     def input_txt_file_gui(self, path_from_gui):
         ciphered_text = read_txt_file(path_from_gui)
@@ -169,23 +171,26 @@ class enigma_interface:
         # User have a choice to import Enigma Simulator Settings from .json file.
         # If user chooses to import settings, he probably doesn't need to save them later in the program.
         # The choice will be remembered and used to initiate "save_json_file" block
-        setting_were_not_inserted = True
-        while setting_were_not_inserted:
+        while True:
             self.choice_import_settings = input(
                 f'\nWould you like to import Enigma settings from the json file? y/n: '
             )
             if self.choice_import_settings == 'y':
-                #add to check this imported settings
-                alpha, beta, gama, steckerbrett, reflector = self.import_settings_from_file()
-                setting_were_not_inserted = False
-            elif self.choice_import_settings == 'n':
-                '''Insert settings by hand'''
                 # reads data entered by hand
-                alpha, beta, gama, steckerbrett, reflector = self.insert_settings_by_hand()
-                setting_were_not_inserted = False
+                self.alpha, self.beta, self.gama, self.steckerbrett, self.reflector = self.import_settings_from_file()
+                break
+            elif self.choice_import_settings == 'n':  
+                # reads data entered by hand
+                self.alpha, self.beta, self.gama, self.steckerbrett, self.reflector = self.insert_settings_by_hand()
+                break
             else:
                 print(self._option)
-            self.initiate_enigma_simulator(alpha, beta, gama, steckerbrett, reflector, self.ciphered_text)
+
+    def initiate_program(self):
+        self.initiate_enigma_simulator(self.alpha,
+        self.beta, self.gama, self.steckerbrett,
+        self.reflector,
+        self.ciphered_text)
         
     def import_settings_from_file(self):
         '''Reading settings from to .json file'''
@@ -220,8 +225,7 @@ class enigma_interface:
 
     def insert_steckerbrett_by_hand(self):
         '''Returns inserted steckerbrett values and formated into dictionary'''
-        steckerbrett_has_wrong_format = True
-        while steckerbrett_has_wrong_format:
+        while True:
             steckerbrett = input(f'\nInsert Steckerbreit values that you want to switch in format "AB,CD": ')
             if steckerbrett:
                 # string characters are converted into dictionary
@@ -229,15 +233,14 @@ class enigma_interface:
                 try:
                     steckerbrett = self.format_to_dict(steckerbrett)
                     #steckerbrett_check_if_value_in_text(steckerbrett, self.ciphered_text)
-                    steckerbrett_has_wrong_format = False
+                    return steckerbrett
                 except SteckerbrettWrongFormat as Message:
                     print(f'{Message}. Insert values once again')
                 except SteckerbrettNotInText as Message:
                     print(f'{Message}. Insert values once again')
             else:
-                # If Steckerbrett is empty continue
-                steckerbrett_has_wrong_format = False
-        return steckerbrett
+                # Steckerbrett can have empty str value
+                return steckerbrett
 
     def format_to_dict(self, steckenbrett_str):
         '''
@@ -310,15 +313,19 @@ class enigma_interface:
         while True:
             reflector = input(f'\nWhich reflector would you like to choose? (A, B, C): ')
             try:
-                self.check_if_reflector_has_value(reflector)
-                return reflector
-            except InvalidRotorValues as Message:
+                '''WEŹ TO PRZENIEŚ do osobnej funkcji i wtedy będziesz mógł testować z łatowścią'''
+                if reflector:
+                    return reflector
+                else:
+                    raise NoReflectorSelected('No reflector has been selected')
+                #if self.check_if_reflector_has_value(reflector): 
+            except NoReflectorSelected as Message:
                 print(f'{Message}. Insert values once again')
     
 
-    def check_if_reflector_has_value(self, reflector):
-        if not reflector:
-            raise NoReflectorSelected('No reflector has been selected')
+    '''def check_if_reflector_has_value(self, reflector):
+        if not reflector:'''
+            
     
     '''Initiating program'''
     def initiate_enigma_simulator(self, alpha, beta, gama, steckenbrett, reflector, ciphered_text):
@@ -381,7 +388,7 @@ class enigma_interface:
                 # user must insert all settings again
                 alpha, beta, gama, steckerbrett, reflector = self.insert_settings_by_hand()
                 self.initiate_enigma_simulator(alpha, beta, gama, steckerbrett, reflector, self.ciphered_text)
-
+            
 
     
     '''

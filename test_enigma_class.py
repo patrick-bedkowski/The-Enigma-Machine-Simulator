@@ -1,5 +1,5 @@
 from enigma_class import Enigma
-from exceptions import SteckerbrettValueError
+from exceptions import SteckerbrettValueError, ReflectorValueIsUndefined
 import pytest
 
 def test_normal_insert():
@@ -41,7 +41,11 @@ def test_initial_settings():
     reflector = "A"
     enigma = Enigma(alpha, beta, gama, steckerbrett, reflector)
 
-    assert enigma.initial_settings == {"rotors": [5, 17, 24], "steckenbrett": {'A': 'B', 'C': 'D'}, "reflector": 'A'}
+    assert enigma.initial_settings == {
+        "rotors": [5, 17, 24],
+        "steckenbrett": {'A': 'B', 'C': 'D'},
+        "reflector": 'A'
+    }
     
 '''
 TEST Steckerbrett
@@ -75,6 +79,11 @@ def test_alphabet():
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
         'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
     ]
+'''REFLECTOR'''
+
+'''def test_reflector_inserted_as_space_value():
+    with pytest.raises(ReflectorValueIsUndefined)
+        enigma = Enigma(reflector = " ")'''
 
 def test_initaite_reflector_A():
     enigma = Enigma(reflector = 'A')

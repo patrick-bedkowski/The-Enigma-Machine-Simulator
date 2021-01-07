@@ -1,5 +1,5 @@
 from string import ascii_uppercase
-from exceptions import (InvalidRotorValues, SteckerbrettRepeatedValues,SteckerbrettValueError)
+from exceptions import (ReflectorValueIsUndefined, InvalidRotorValues, SteckerbrettRepeatedValues,SteckerbrettValueError)
 
 class Enigma:
 
@@ -44,16 +44,21 @@ class Enigma:
         self._gama = self.check_set_rotor_value(gama)
 
         # If steckerbrett has been inserted, check its content
-        if steckerbrett and self.steckerbrett_check_values(steckerbrett):
-            if self.steckerbrett_check_for_same_values(steckerbrett):
+        if steckerbrett:
+            if (self.steckerbrett_check_for_same_values(steckerbrett) and
+            self.steckerbrett_check_values(steckerbrett)):
                 self._steckerbrett = steckerbrett
         else:
+            # if steckerbrett is empty, assign an empty dict to it
             self._steckerbrett = steckerbrett
-        if (self.reflector_check_model(reflector)):
-            self._reflector = reflector
+        
         # initiate reflector attribute
-        self._reflector_alphabet = self.initaite_reflector()
+        if self.reflector_check_model(reflector):
+            self._reflector = reflector
+            self._reflector_alphabet = self.initaite_reflector()
 
+        # save initial settings, before they are changed
+        # due to the program changing some of them
         self.initial_settings = self.initial_settings()
 
     '''
@@ -170,10 +175,10 @@ class Enigma:
         if self._reflector == "A":
             # holds ascii alphabet shifted 5 letters to the right
             return self.shift(self._alphabet, -5)
-        if self._reflector == "B":
+        elif self._reflector == "B":
             # holds ascii alphabet shifted 2 letters to the left
             return self.shift(self._alphabet, 2)
-        if self._reflector == "C":
+        elif self._reflector == "C":
             # holds ascii alphabet shifted 7 letters to the left
             return self.shift(self._alphabet, 7)
 

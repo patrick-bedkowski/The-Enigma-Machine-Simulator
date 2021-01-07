@@ -5,10 +5,11 @@ from exceptions import (
     SteckerbrettWrongFormat,
     InvalidRotorValues,
     NoReflectorSelected,
-    InvalidRotorQuantity
+    InvalidRotorQuantity,
+    ReflectorValueIsUndefined
 )
 # this module is neccessary to test function with inputs
-# from io import StringIO
+from io import StringIO
 
 def test_format_dict():
     enigma_if = enigma_interface(Enigma)
@@ -57,11 +58,37 @@ def test_insert_not_enough_values_of_rotors():
     with pytest.raises(InvalidRotorQuantity):
         enigma_if.create_list_of_rotors(rotors)
 
-def test_reflector_value_empty():
+def test_reflector_correct_value(monkeypatch):
     enigma_if = enigma_interface(Enigma)
-    reflector = ''
+    # Monkey patch input() function
+    monkeypatch.setattr('sys.stdin', StringIO('A'))
+    assert enigma_if.insert_reflector_value() == 'A'
+
+def test_reflector_incorrect_value(monkeypatch):
+    '''
+    Even though program does not raise an error when inserted reflector option
+    is not defined in the project, it is correct. The purpose of insert_reflector_value,
+    is to catch empty value.
+    This wrong inseret value of reflector will be later catched in enigma_class part.
+    '''
+    enigma_if = enigma_interface(Enigma)
+    # Monkey patch input() function
+    monkeypatch.setattr('sys.stdin', StringIO('D'))
+    assert enigma_if.insert_reflector_value() == 'D'
+
+def test_reflector_empty(monkeypatch):
+    enigma_if = enigma_interface(Enigma)
+    # Monkey patch input() function
+    monkeypatch.setattr('sys.stdin', StringIO('\n'))
     with pytest.raises(NoReflectorSelected):
-        enigma_if.check_if_reflector_has_value(reflector)
+        enigma_if.insert_reflector_value()
+
+'''
+Szanowny Panie, 
+chciałbym Pana zapytać czy istnieje możliwość przetestowania (za pomocą pytest) pustego inputu wprowadzonego przez użytkownika?
+Za pomocą monkeypatch i modułu StringIO możliwe jest testowanie dowolnie wprowadzanych wartości funkcją input(), lecz ten moduł wydaje się nie wspierać "pustych wprowadzeń". Nie znalazłem niestety żadnych owocnych informacji na internecie, ani na forach, jak "oszukać" ten input. Pomyślałem, że może Pan zna jakiś sposób.
+Dziękuję za odpowiedź. 
+'''
 
 '''ROTOR INSERTS'''
 
