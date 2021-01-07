@@ -1,4 +1,6 @@
 from enigma_class import Enigma
+from exceptions import SteckerbrettValueError
+import pytest
 
 def test_normal_insert():
     alpha = 5
@@ -35,14 +37,37 @@ def test_initial_settings():
     alpha = 5
     beta = 17
     gama = 24
-    steckerbrett = {'A': 'B', 'C': 'D'}
-    reflector = 'A'
+    steckerbrett = {"A": "B", "C": "D"}
+    reflector = "A"
     enigma = Enigma(alpha, beta, gama, steckerbrett, reflector)
-    assert enigma.initial_settings() == {
-        "rotors": [5, 17, 24],
-        'steckenbrett': {'A': 'B', 'C': 'D'},
-        'reflector': 'A'
-    }
+
+    assert enigma.initial_settings == {"rotors": [5, 17, 24], "steckenbrett": {'A': 'B', 'C': 'D'}, "reflector": 'A'}
+    
+'''
+TEST Steckerbrett
+'''
+
+def test_steckerbrett_check_values_correct():
+    steckerbrett_dict = {"A": "B", "C": "D"}
+    enigma = Enigma(steckerbrett = steckerbrett_dict)
+
+    assert enigma.steckerbrett_check_values(steckerbrett_dict)
+
+def test_steckerbrett_value_not_in_ascii():
+    steckerbrett_dict = {"A": "3", "C": "D"}
+    
+    with pytest.raises(SteckerbrettValueError):
+        enigma = Enigma(steckerbrett = steckerbrett_dict)
+
+def test_steckerbrett_key_not_in_ascii():
+    steckerbrett_dict = {"1": "8", "C": "D"}
+    with pytest.raises(SteckerbrettValueError):
+        enigma = Enigma(steckerbrett = steckerbrett_dict)
+
+def test_steckerbrett_key_and_value_not_in_ascii():
+    steckerbrett_dict = {"1": "8", "C": "D"}
+    with pytest.raises(SteckerbrettValueError):
+        enigma = Enigma(steckerbrett = steckerbrett_dict)
 
 def test_alphabet():
     enigma = Enigma()

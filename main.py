@@ -13,6 +13,7 @@ from exceptions import (
     SteckerbrettRepeatedValues,
     SteckerbrettWrongFormat,
     SteckerbrettNotInText,
+    SteckerbrettValueError,
     ReflectorValueIsUndefined,
     NoAsciiDetected,
     WrongNumberOfLines,
@@ -226,8 +227,8 @@ class enigma_interface:
                 # string characters are converted into dictionary
                 # and its checked if inserted steckerbrety has empty spaces
                 try:
-                    steckerbrett = format_to_dict(steckerbrett)
-                    steckerbrett_check_if_value_in_text(steckerbrett, self.ciphered_text)
+                    steckerbrett = self.format_to_dict(steckerbrett)
+                    #steckerbrett_check_if_value_in_text(steckerbrett, self.ciphered_text)
                     steckerbrett_has_wrong_format = False
                 except SteckerbrettWrongFormat as Message:
                     print(f'{Message}. Insert values once again')
@@ -238,6 +239,39 @@ class enigma_interface:
                 steckerbrett_has_wrong_format = False
         return steckerbrett
 
+    def format_to_dict(self, steckenbrett_str):
+        '''
+        Function is collecting inserted string values of conjugated letters
+        that are separated by a coma. It converts them to a dictionary with
+        key and value as conjugated letters. Function returns a dictionary.
+        This function also checks if letters inserted into steckerbrett
+        have no empty spaces.
+        '''
+        '''
+        Values must be inserted like so AB,CD
+        This function will convert str value to dictionary like: {'a': 'b', 'c': 'd'}
+        '''
+        # create a new dictionary
+        new_dict = {}
+        # split pairs of letters separated by a coma and create a list
+        list_of_letter_pairs = steckenbrett_str.split(",")
+
+        # iterate through a list containing letters
+        for letter_pair in list_of_letter_pairs:
+
+            if len(letter_pair) == 2:
+                # checks if there is blank space in a pair of letters
+                # I did not implement another function to check that condition,
+                # because it is connected with the code in this function
+                if " " in letter_pair:
+                    # raise an exception about wrong Steckerbrett formating
+                    raise SteckerbrettWrongFormat('Steckerbrett has wrong format')
+            else:
+                raise SteckerbrettWrongFormat('Steckerbrett has wrong format')
+            # pairs of conjugated letters are updated into new dictionary
+            new_dict.update({letter_pair[0]: letter_pair[1]})
+        return new_dict
+
     def insert_rotors_values(self):
         '''Returns list of rotor values'''
         while True:
@@ -246,20 +280,28 @@ class enigma_interface:
                 list_of_rotors = self.create_list_of_rotors(rotors)
                 return list_of_rotors
             except InvalidRotorQuantity as Message:
-                print(Message)
-                print('Insert values once again')
+                print(f'{Message}. Insert values once again')
+            except InvalidRotorValues as Message:
+                print(f'{Message}. Insert values once again')
 
     def create_list_of_rotors(self, rotors):
+        '''Returns list of rotor values. Raises Errors, if inserted settings don't meet conditions'''
+        # if rotor is not empty
         if rotors:
-            # remove spaces from inserted text
-            rotors = rotors.replace(" ", "")
+            # Raises error if there is space or one value is missing in str
+            if ' ' in rotors or ',,' in rotors:
+                raise InvalidRotorValues('Invalid rotor values')
+
             #create list of splited elements separated by a coma 
             list_of_rotors = rotors.split(',')
-            # if number of inserted settings is 3, return list of rotors
-            if len(list_of_rotors) == 3:
-                return list_of_rotors
+
+            if len(list_of_rotors) != 3:
+                raise InvalidRotorQuantity('Invalid rotor quantity')
+            # Raises error if there is empty value like 1,,3
+            elif all(list_of_rotors) == False:
+                raise InvalidRotorValues('Invalid rotor values')
             else:
-                raise InvalidRotorQuantity('Invalid rotor quantity') #! sprawdź czy napis taki sam
+                return list_of_rotors
         else:
             raise InvalidRotorQuantity('Invalid rotor quantity')
 
@@ -271,8 +313,7 @@ class enigma_interface:
                 self.check_if_reflector_has_value(reflector)
                 return reflector
             except InvalidRotorValues as Message:
-                print(Message)
-                print('Insert values once again')
+                print(f'{Message}. Insert values once again')
     
 
     def check_if_reflector_has_value(self, reflector):
@@ -295,10 +336,13 @@ class enigma_interface:
             # If user chosed not to import settings from file
             # Exporting settings inserted by hand is available 
             if self.choice_import_settings == 'n':
-                self.export_json_menu(enigma.initial_settings())
+                self.export_json_menu(enigma.initial_settings)
             # print last message
             print('\nThank you for using my Enigma Machine Simulator')
-        except InvalidRotorValues as Message:
+            '''
+            All this exceptions are raised in enigma_class.py
+            '''
+        except (InvalidRotorValues, InvalidRotorQuantity) as Message:
             if self.choice_import_settings == 'y':
                 print(f'{Message}. Seems like imported file contain incorrect rotor values.'+\
                     '\nPlease restart program with correct settings')
@@ -306,7 +350,7 @@ class enigma_interface:
                 print(f'{Message}. Insert proper values again.')
                 # user must insert all settings again
                 alpha, beta, gama, steckerbrett, reflector = self.insert_settings_by_hand()
-                self.initiate_enigma_simulator(alpha, beta, gama, steckerbrett, reflector)
+                self.initiate_enigma_simulator(alpha, beta, gama, steckerbrett, reflector, self.ciphered_text)
         except SteckerbrettRepeatedValues as Message:
             # If incorrect values have been inserted user will be asked to insert them again
             if self.choice_import_settings == 'y':
@@ -316,7 +360,7 @@ class enigma_interface:
                 print(f'{Message}. Insert proper values again.')
                 # user must insert all settings again
                 alpha, beta, gama, steckerbrett, reflector = self.insert_settings_by_hand()
-                self.initiate_enigma_simulator(alpha, beta, gama, steckerbrett, reflector)
+                self.initiate_enigma_simulator(alpha, beta, gama, steckerbrett, reflector, self.ciphered_text)
         except ReflectorValueIsUndefined as Message:
             # If incorrect values have been inserted user will be asked to insert them again
             if self.choice_import_settings == 'y':
@@ -326,9 +370,18 @@ class enigma_interface:
                 print(f'{Message}. Insert proper values again.')
                 # user must insert all settings again
                 alpha, beta, gama, steckerbrett, reflector = self.insert_settings_by_hand()
-                self.initiate_enigma_simulator(alpha, beta, gama, steckerbrett, reflector)
+                self.initiate_enigma_simulator(alpha, beta, gama, steckerbrett, reflector, self.ciphered_text)
+        except SteckerbrettValueError as Message:
+            # If incorrect values have been inserted user will be asked to insert them again
+            if self.choice_import_settings == 'y':
+                print(f'{Message}. Seems like imported file contain incorrect values.'+\
+                    '\nPlease restart program with correct settings')
+            elif self.choice_import_settings == 'n':
+                print(f'{Message}. Insert proper values again.')
+                # user must insert all settings again
+                alpha, beta, gama, steckerbrett, reflector = self.insert_settings_by_hand()
+                self.initiate_enigma_simulator(alpha, beta, gama, steckerbrett, reflector, self.ciphered_text)
 
-                
 
     
     '''
@@ -402,39 +455,6 @@ class enigma_interface:
             except FileNotFound as Message:
                 print(f'{Message}. {self._insert_file_path}')'''
 
-
-def format_to_dict(steckenbrett_str):
-    '''
-    Function is collecting inserted string values of conjugated letters
-    that are separated by a coma. It converts them to a dictionary with
-    key and value as conjugated letters. Function returns a dictionary.
-    This function also checks if letters inserted into steckerbrett
-    have no empty spaces.
-    '''
-    '''
-    Values must be inserted like so AB,CD
-    This function will convert str value to dictionary like: {'a': 'b', 'c': 'd'}
-    '''
-    # create a new dictionary
-    new_dict = {}
-    # split pairs of letters separated by a coma and create a list
-    list_of_letter_pairs = steckenbrett_str.split(",")
-
-    # iterate through a list containing letters
-    for letter_pair in list_of_letter_pairs:
-
-        if len(letter_pair) == 2:
-            # checks if there is blank space in a pair of letters
-            # I did not implement another function to check that condition,
-            # because it is connected with the code in this function
-            if " " in letter_pair:
-                # raise an exception about wrong Steckerbrett formating
-                raise SteckerbrettWrongFormat('Steckerbrett has wrong format')
-        else:
-            raise SteckerbrettWrongFormat('Steckerbrett has wrong format')
-        # pairs of conjugated letters are updated into new dictionary
-        new_dict.update({letter_pair[0]: letter_pair[1]})
-    return new_dict
 
 def steckerbrett_check_if_value_in_text(steckerbrett_dict, text):
     '''

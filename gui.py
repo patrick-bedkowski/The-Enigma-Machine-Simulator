@@ -7,7 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from main import enigma_interface, format_to_dict
+from main import enigma_interface
 from enigma_class import Enigma
 
 from exceptions import (
@@ -442,7 +442,7 @@ class EnigmaUi(QtWidgets.QMainWindow):
 
     def steckerbrett_format_dict(self):
         try:
-            self.steckerbrett = format_to_dict(self.steckerbrett)
+            self.steckerbrett =  self.enigma_interface.format_to_dict(self.steckerbrett)
         except SteckerbrettWrongFormat as Message:
             self.print_messages(Message)
 

@@ -1,5 +1,5 @@
 from string import ascii_uppercase
-from exceptions import (InvalidRotorValues, SteckerbrettRepeatedValues)
+from exceptions import (InvalidRotorValues, SteckerbrettRepeatedValues,SteckerbrettValueError)
 
 class Enigma:
 
@@ -44,7 +44,7 @@ class Enigma:
         self._gama = self.check_set_rotor_value(gama)
 
         # If steckerbrett has been inserted, check its content
-        if steckerbrett:
+        if steckerbrett and self.steckerbrett_check_values(steckerbrett):
             if self.steckerbrett_check_for_same_values(steckerbrett):
                 self._steckerbrett = steckerbrett
         else:
@@ -53,6 +53,8 @@ class Enigma:
             self._reflector = reflector
         # initiate reflector attribute
         self._reflector_alphabet = self.initaite_reflector()
+
+        self.initial_settings = self.initial_settings()
 
     '''
     SET: alpha, beta, gama, steckerbrett, reflector
@@ -103,6 +105,18 @@ class Enigma:
                 # if key, value repetition has not been detected, append them into detection list
                 detected_values_keys.extend([key, value])
         # return information that repetition of the values has not been detected
+        return True
+
+    def steckerbrett_check_values(self, steckerbrett_dict):
+        '''
+        Steckerbrett cannot hold values that are not characters in used alphabet. 
+        Function Returns Boolean value True, or raises error.
+        '''
+        for key, value in steckerbrett_dict.items():
+            if key in self._alphabet and value in self._alphabet:
+                continue
+            else:  
+                raise SteckerbrettValueError('Value inserted into Steckerbrett is incorrect')
         return True
     
     '''Reflector'''

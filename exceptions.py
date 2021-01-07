@@ -29,24 +29,26 @@ class SteckerbrettWrongFormat(Exception):
         super().__init__('\n> Steckerbrett has wrong format')
         self.steckerbrett = steckerbrett
 
-
+#! This needs to be changed
 class SteckerbrettNotInText(Exception):
     def __init__(self, steckerbrett):
         super().__init__('\n> Steckerbrett contain characters not seen in inserted text')
         self.steckerbrett = steckerbrett
 
+class SteckerbrettValueError(Exception):
+    def __init__(self, steckerbrett):
+        super().__init__('\n> Value inserted into Steckerbrett is incorrect')
+        self.steckerbrett = steckerbrett
 
 class ReflectorValueIsUndefined(ValueError):
     def __init__(self, reflector):
         super().__init__('\n> Inserted Reflector Value is Undefined')
         self.reflector = reflector
 
-
 class OutOfRangeValue(Exception):
     def __init__(self, choice):
         super().__init__('\n> Out of range value was chosen')
         self.choice = choice
-
 
 class IncorrectReflector(Exception):
     def __init__(self, reflector):
