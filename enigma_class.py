@@ -104,11 +104,14 @@ class Enigma:
         # iterate through keys, values
         for key, value in steckerbrett_dict.items():
             # if key, value is the same as in the detection list, raise an error
-            if key in detected_values_keys and value in detected_values_keys:
+            if key in detected_values_keys or value in detected_values_keys:
+                raise SteckerbrettRepeatedValues('Steckerbrett must have different values')
+            elif key == value:
                 raise SteckerbrettRepeatedValues('Steckerbrett must have different values')
             else:
                 # if key, value repetition has not been detected, append them into detection list
-                detected_values_keys.extend([key, value])
+                detected_values_keys.append(key)
+                detected_values_keys.append(value)
         # return information that repetition of the values has not been detected
         return True
 

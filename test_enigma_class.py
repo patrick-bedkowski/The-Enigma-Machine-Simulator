@@ -1,5 +1,5 @@
 from enigma_class import Enigma
-from exceptions import SteckerbrettValueError, ReflectorValueIsUndefined
+from exceptions import SteckerbrettValueError, ReflectorValueIsUndefined, SteckerbrettRepeatedValues
 import pytest
 
 def test_normal_insert():
@@ -71,6 +71,26 @@ def test_steckerbrett_key_not_in_ascii():
 def test_steckerbrett_key_and_value_not_in_ascii():
     steckerbrett_dict = {"1": "8", "C": "D"}
     with pytest.raises(SteckerbrettValueError):
+        enigma = Enigma(steckerbrett = steckerbrett_dict)
+
+def test_steckerbrett_key_and_value_have_same_value():
+    steckerbrett_dict = {"A": "A", "C": "D"}
+    with pytest.raises(SteckerbrettRepeatedValues):
+        enigma = Enigma(steckerbrett = steckerbrett_dict)
+
+def test_steckerbrett_key_is_repeated():
+    steckerbrett_dict = {"A": "B", "A": "C"}
+    with pytest.raises(SteckerbrettRepeatedValues):
+        enigma = Enigma(steckerbrett = steckerbrett_dict)
+    
+def test_steckerbrett_key_is_repeated_in_values():
+    steckerbrett_dict = {"A": "B", "C": "A"}
+    with pytest.raises(SteckerbrettRepeatedValues):
+        enigma = Enigma(steckerbrett = steckerbrett_dict)
+
+def test_steckerbrett_value_is_repeated():
+    steckerbrett_dict = {"A": "B", "C": "B"}
+    with pytest.raises(SteckerbrettRepeatedValues):
         enigma = Enigma(steckerbrett = steckerbrett_dict)
 
 def test_alphabet():

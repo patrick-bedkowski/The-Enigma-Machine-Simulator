@@ -85,12 +85,6 @@ def test_reflector_empty():
     with pytest.raises(NoReflectorSelected):
         enigma_if.check_if_reflector_inserted(reflector)
 
-'''
-Szanowny Panie, 
-chciałbym Pana zapytać czy istnieje możliwość przetestowania (za pomocą pytest) pustego inputu wprowadzonego przez użytkownika?
-Za pomocą monkeypatch i modułu StringIO możliwe jest testowanie dowolnie wprowadzanych wartości funkcją input(), lecz ten moduł wydaje się nie wspierać "pustych wprowadzeń". Nie znalazłem niestety żadnych owocnych informacji na internecie, ani na forach, jak "oszukać" ten input. Pomyślałem, że może Pan zna jakiś sposób.
-Dziękuję za odpowiedź. 
-'''
 
 '''ROTOR INSERTS'''
 
