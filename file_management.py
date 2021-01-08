@@ -12,9 +12,9 @@ import json
 '''IS THIS OPTIMAl???'''
 def check_if_ascii(letter):  # checks if input is in ascii uppercases
     '''
-    > It doesn't matter if the input is upper or lower character
+    Input must be UPPERCASE alphabet character
     '''
-    if letter.upper() in ascii_uppercase:
+    if letter in ascii_uppercase:
         return True
     else:
         return False
@@ -109,11 +109,9 @@ def save_json_file(settings):
     else:
         raise UndefinedFileName('No name was inserted')
 
-
     #File is created
     with open(f'{name_of_the_file}.json', 'w') as filehandle:
         json.dump(settings, filehandle)
-
 
     # Proper message is displayed
     print(f'\nFile data.json was created in the main directory')

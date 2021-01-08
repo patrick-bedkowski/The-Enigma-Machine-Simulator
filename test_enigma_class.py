@@ -97,9 +97,9 @@ def test_alphabet():
     ]
 '''REFLECTOR'''
 
-'''def test_reflector_inserted_as_space_value():
-    with pytest.raises(ReflectorValueIsUndefined)
-        enigma = Enigma(reflector = " ")'''
+def test_reflector_inserted_as_space_value():
+    with pytest.raises(ReflectorValueIsUndefined):
+        enigma = Enigma(reflector = " ")
 
 def test_initaite_reflector_A():
     enigma = Enigma(reflector = 'A')

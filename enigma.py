@@ -42,14 +42,16 @@ class Enigma_interface:
         '''
         Asumptions for the inputs. It descibes how to insert values properly
         '''
+        #! czy te znaki potrzebne
         assumpions_dist = [
             ['Text',
                 f'{chr(62)} must be inserted as uppercases characters\n'+\
-                f'{chr(62)} must only contain characters of the alphabet in range A-Z'
+                f'{chr(62)} must only contain characters of the alphabet in range A-Z\n'+\
+                f'{chr(62)} must not contain spaces'
             ],
             ['Steckerbrett',
                 f'{chr(62)} can be left empty\n'+\
-                f'{chr(62)} must be inserted in pair of letters separated by a commas, e.g. AB, CD\n'+\
+                f'{chr(62)} must be inserted in pair of letters separated by a commas, e.g. AB,CD\n'+\
                 f'{chr(62)} must not hold two identical letters'
             ],
             ['Rotors',
@@ -60,7 +62,8 @@ class Enigma_interface:
                 f'{chr(62)} must be inserted as one letter choosen from A, B, C'
             ],
             ['Save/Import Files',
-                f'{chr(62)} name can only consists of characters of the alphabet in range a-z and integer numbers'
+                f'{chr(62)} name can only consists of characters of the alphabet in range a-z and integer numbers\n'+\
+                f'{chr(62)} uppercase and lowercase values of letters are acceptable'
             ],
             ['Imported .txt file',
                 f'{chr(62)} must consists of characters of the alphabet in range a-z\n'+\
@@ -372,49 +375,27 @@ class Enigma_interface:
             # print last message
             print('\nThank you for using my Enigma Machine Simulator')
             '''
-            All this exceptions are raised in enigma_class.py
+            All this exceptions regarding values correctness are raised in enigma_class.py
             '''
         except (InvalidRotorValues, InvalidRotorQuantity) as Message:
-            if self.choice_import_settings == 'y':
+            # If incorrect values have been inserted user will be asked to insert them again
+            self.initiate_enigma_again(Message)
+        except SteckerbrettRepeatedValues as Message:
+            self.initiate_enigma_again(Message)
+        except SteckerbrettValueError as Message:
+            self.initiate_enigma_again(Message)
+        except ReflectorValueIsUndefined as Message:
+            self.initiate_enigma_again(Message)
+
+    def initiate_enigma_again(self, Message):
+        if self.choice_import_settings == 'y':
                 print(f'{Message}. Seems like imported file contain incorrect rotor values.'+\
                     '\nPlease restart program with correct settings')
-            elif self.choice_import_settings == 'n':
-                print(f'{Message}. Insert proper values again.')
-                # user must insert all settings again
-                alpha, beta, gama, steckerbrett, reflector = self.insert_settings_by_hand()
-                self.initiate_enigma_simulator(alpha, beta, gama, steckerbrett, reflector, self.ciphered_text)
-        except SteckerbrettRepeatedValues as Message:
-            # If incorrect values have been inserted user will be asked to insert them again
-            if self.choice_import_settings == 'y':
-                print(f'{Message}. Seems like imported file contain incorrect values.'+\
-                    '\nPlease restart program with correct settings')
-            elif self.choice_import_settings == 'n':
-                print(f'{Message}. Insert proper values again.')
-                # user must insert all settings again
-                alpha, beta, gama, steckerbrett, reflector = self.insert_settings_by_hand()
-                self.initiate_enigma_simulator(alpha, beta, gama, steckerbrett, reflector, self.ciphered_text)
-        except ReflectorValueIsUndefined as Message:
-            # If incorrect values have been inserted user will be asked to insert them again
-            if self.choice_import_settings == 'y':
-                print(f'{Message}. Seems like imported file contain incorrect values.'+\
-                    '\nPlease restart program with correct settings')
-            elif self.choice_import_settings == 'n':
-                print(f'{Message}. Insert proper values again.')
-                # user must insert all settings again
-                alpha, beta, gama, steckerbrett, reflector = self.insert_settings_by_hand()
-                self.initiate_enigma_simulator(alpha, beta, gama, steckerbrett, reflector, self.ciphered_text)
-        except SteckerbrettValueError as Message:
-            # If incorrect values have been inserted user will be asked to insert them again
-            if self.choice_import_settings == 'y':
-                print(f'{Message}. Seems like imported file contain incorrect values.'+\
-                    '\nPlease restart program with correct settings')
-            elif self.choice_import_settings == 'n':
-                print(f'{Message}. Insert proper values again.')
-                # user must insert all settings again
-                alpha, beta, gama, steckerbrett, reflector = self.insert_settings_by_hand()
-                self.initiate_enigma_simulator(alpha, beta, gama, steckerbrett, reflector, self.ciphered_text)
-
-
+        elif self.choice_import_settings == 'n':
+            print(f'{Message}. Insert proper values again.')
+            # user must insert all settings again
+            alpha, beta, gama, steckerbrett, reflector = self.insert_settings_by_hand()
+            self.initiate_enigma_simulator(alpha, beta, gama, steckerbrett, reflector, self.ciphered_text)
 
     '''
     TXT FILE EXPORTING PART
