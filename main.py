@@ -186,12 +186,6 @@ class enigma_interface:
             else:
                 print(self._option)
 
-    def initiate_program(self):
-        self.initiate_enigma_simulator(self.alpha,
-        self.beta, self.gama, self.steckerbrett,
-        self.reflector,
-        self.ciphered_text)
-
     def import_settings_from_file(self):
         '''Reading settings from to .json file'''
         while True:
@@ -263,22 +257,23 @@ class enigma_interface:
 
         # iterate through a list containing letters
         for letter_pair in list_of_letter_pairs:
-
             if len(letter_pair) == 2:
                 # check if there is blank space in a pair of letters
-                self.check_if_key_contain_space(letter_pair)
                 # check if first letter in pair is not present in the new dictionary as key
-                self.check_if_key_is_not_repeated(letter_pair, new_dict)
+                if self.check_if_key_contain_space(letter_pair):
+                    if self.check_if_key_is_not_repeated(letter_pair, new_dict):
+                        new_dict.update({letter_pair[0]: letter_pair[1]})
             else:
                 raise SteckerbrettWrongFormat('Steckerbrett has wrong format')
             # pairs of conjugated letters are updated into new dictionary
-            new_dict.update({letter_pair[0]: letter_pair[1]})
         return new_dict
 
     def check_if_key_contain_space(self, letter_pair):
         if " " in letter_pair:
             # raise an exception about wrong Steckerbrett formating
             raise SteckerbrettWrongFormat('Steckerbrett has wrong format')
+        else:
+            return True
 
     def check_if_key_is_not_repeated(self, letter_pair, new_dict):
         # if dictionary is not empty
@@ -289,6 +284,10 @@ class enigma_interface:
                 # When that happens python would simply change value of the inserted key
                 if letter_pair[0] == key:
                     raise SteckerbrettRepeatedValues('Steckerbrett must have different values')
+                else:
+                    return True
+        else:
+            return True
 
     def insert_rotors_values(self):
         '''Returns list of rotor values'''
@@ -347,6 +346,11 @@ class enigma_interface:
     '''def check_if_reflector_has_value(self, reflector):
         if not reflector:'''
 
+    def initiate_program(self):
+        self.initiate_enigma_simulator(self.alpha,
+        self.beta, self.gama, self.steckerbrett,
+        self.reflector,
+        self.ciphered_text)
 
     '''Initiating program'''
     def initiate_enigma_simulator(self, alpha, beta, gama, steckenbrett, reflector, ciphered_text):

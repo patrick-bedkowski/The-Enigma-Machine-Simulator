@@ -3,11 +3,6 @@ from exceptions import (ReflectorValueIsUndefined, InvalidRotorValues, Steckerbr
 
 class Enigma:
 
-    # CZY mogę przyjąć założenie, że użytkownik nie przygotuje sam pliki z błędnymi ustawieniami?
-    # WHEN YOU IMPORT SETTINGS TO ENIGMA, PROGRAM ASSUMES THAT YOU WANT TO READ CIPHERED TEXT,
-    # so there's no need to save this settings again to external file, because you already have
-    # settings file for that encryption
-
     def __init__(self, alpha = 1, beta = 1, gama = 1, steckerbrett = {}, reflector = 'A'):
         '''
         Class Enigma. Contains attributes:
@@ -51,7 +46,7 @@ class Enigma:
         else:
             # if steckerbrett is empty, assign an empty dict to it
             self._steckerbrett = steckerbrett
-        
+
         # initiate reflector attribute
         if self.reflector_check_model(reflector):
             self._reflector = reflector
@@ -89,7 +84,7 @@ class Enigma:
                 return int(rotor)
         except ValueError:
             raise InvalidRotorValues('Invalid rotor values')
-    
+
 
     '''Steckerbrett'''
     def steckerbrett_check_for_same_values(self, steckerbrett_dict):
@@ -117,16 +112,16 @@ class Enigma:
 
     def steckerbrett_check_values(self, steckerbrett_dict):
         '''
-        Steckerbrett cannot hold values that are not characters in used alphabet. 
+        Steckerbrett cannot hold values that are not characters in used alphabet.
         Function Returns Boolean value True, or raises error.
         '''
         for key, value in steckerbrett_dict.items():
             if key in self._alphabet and value in self._alphabet:
                 continue
-            else:  
+            else:
                 raise SteckerbrettValueError('Value inserted into Steckerbrett is incorrect')
         return True
-    
+
     '''Reflector'''
 
     def reflector_check_model(self, reflector):
@@ -151,7 +146,7 @@ class Enigma:
         enigma_settings['steckenbrett'] = self._steckerbrett
         enigma_settings['reflector'] = self._reflector
         return enigma_settings
-    
+
     def group_rotors(self):
         '''
         Returns list grouped values of each rotor.
@@ -187,7 +182,7 @@ class Enigma:
 
     def reflect_letter(self, index):
         '''
-        Returns letter corresponding to the index of a letter 
+        Returns letter corresponding to the index of a letter
         in an alphabet hardcoded to the specific reflector.
         '''
 
@@ -248,7 +243,7 @@ class Enigma:
     def turn_rotors(self):
         '''Turn the rotors'''
 
-        # All rotors are in border position (26,26,26) 
+        # All rotors are in border position (26,26,26)
         if self._gama % 26 == 0 and self._beta % 26 == 0 and self._alpha % 26 == 0:
             self._alpha = 1
             self._beta = 1
@@ -281,7 +276,7 @@ class Enigma:
         If letter is in steckerbrett, switch it for the coressponding one
         '''
         for key, value in self._steckerbrett.items():
-            if letter == key: 
+            if letter == key:
                 letter = value
             elif letter == value:
                 letter = key
@@ -296,7 +291,7 @@ class Enigma:
         '''
         ciphered_text = []
         for letter in inserted_text:
-            
+
             # if steckerbrett holds values
             if self._steckerbrett:
                 letter = self.steckerbrett_change_letters(letter)
@@ -315,12 +310,12 @@ class Enigma:
             next_letter = self.inverse_permutation(self._beta)[self._alphabet.index(next_letter)]
             next_letter = self.inverse_permutation(self._alpha)[self._alphabet.index(next_letter)]
 
-            # Once again conjugated letters need to be checked 
+            # Once again conjugated letters need to be checked
             if self._steckerbrett:
                 next_letter = self.steckerbrett_change_letters(next_letter)
 
             # append encripted letter to ciphered_text
             ciphered_text.append(next_letter)
-        
+
         '''Return Modified'''
         return("".join(ciphered_text))

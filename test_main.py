@@ -42,18 +42,6 @@ def test_format_dict_repeated_key_in_another_key():
     with pytest.raises(SteckerbrettRepeatedValues):
         enigma_if.format_to_dict(steckenbrett_str)
 
-"""def test_format_dict_repeated_key_in_another_key():
-    list1 = ['AB','AC']
-    dict1 = {}
-    for pair in list1:
-        # if dictionary not empty
-        if dict1:
-            for key, value in dict1.items():
-                if pair[0] == key:
-                    raise ValueError
-        else:
-            dict1.update({key: value})"""
-
 
 '''Tests of Manually inserting rotors value'''
 

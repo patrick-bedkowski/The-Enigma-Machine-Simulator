@@ -34,7 +34,7 @@ def read_txt_file(input_file):
     try:
         with open(input_file, "r") as file:  # open file
             lines = file.readlines()  # file's lines
-            # if any line from file is an empty line, release 
+            # if any line from file is an empty line, release
             if any(len(line.strip()) == 0 for line in lines):
                 raise NoTextToProcess('No text was inserted')
             else:
@@ -49,7 +49,7 @@ def read_txt_file(input_file):
                     text = ''.join(data)
                     return text # return text
                 else:
-                    raise WrongNumberOfLines('Files does not contain one line. Format it or choose a different one') 
+                    raise WrongNumberOfLines('Files does not contain one line. Format it or choose a different one')
     except FileNotFoundError:
         raise FileNotFound('File was not found')
 
@@ -131,5 +131,5 @@ def read_json_file(path):
             steckenbrett = data['steckenbrett']
             reflector = data['reflector']
             return rotors[0], rotors[1], rotors[2], steckenbrett, reflector
-    except FileNotFound:
+    except FileNotFoundError:
         raise FileNotFound('File was not found')
