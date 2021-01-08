@@ -47,7 +47,7 @@ class Enigma_interface:
             ['Text',
                 f'{chr(62)} must be inserted as uppercases characters\n'+\
                 f'{chr(62)} must only contain characters of the alphabet in range A-Z\n'+\
-                f'{chr(62)} must not contain spaces'
+                f'{chr(62)} must not contain hard spaces'
             ],
             ['Steckerbrett',
                 f'{chr(62)} can be left empty\n'+\
@@ -226,7 +226,7 @@ class Enigma_interface:
             steckerbrett = input(f'\nInsert Steckerbreit values that you want to switch in format "AB,CD": ')
             if steckerbrett:
                 # string characters are converted into dictionary
-                # and its checked if inserted steckerbrety has empty spaces
+                # and its checked if inserted steckerbrety has empty hard spaces
                 try:
                     steckerbrett = self.format_to_dict(steckerbrett)
                     #steckerbrett_check_if_value_in_text(steckerbrett, self.ciphered_text)
@@ -261,7 +261,7 @@ class Enigma_interface:
         # iterate through a list containing letters
         for letter_pair in list_of_letter_pairs:
             if len(letter_pair) == 2:
-                # check if there is blank space in a pair of letters
+                # check if there is hard space in a pair of letters
                 # check if first letter in pair is not present in the new dictionary as key
                 if self.check_if_key_contain_space(letter_pair):
                     if self.check_if_key_is_not_repeated(letter_pair, new_dict):
@@ -308,7 +308,7 @@ class Enigma_interface:
         '''Returns list of rotor values. Raises Errors, if inserted settings don't meet conditions'''
         # if rotor is not empty
         if rotors:
-            # Raises error if there is space or one value is missing in str
+            # Raises error if there is hard space or one value is missing in str
             if ' ' in rotors or ',,' in rotors:
                 raise InvalidRotorValues('Invalid rotor values')
 

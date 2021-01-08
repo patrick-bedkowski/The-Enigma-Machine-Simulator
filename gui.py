@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'import_2.ui'
+# Form implementation generated from reading ui file 'import_enigma.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.1
 #
@@ -11,19 +11,19 @@ from enigma import Enigma_interface
 from enigma_class import Enigma
 
 from exceptions import (
-    UndefinedOption,
-    SteckerbrettRepeatedValues,
+    #UndefinedOption,
+    #SteckerbrettRepeatedValues,
     SteckerbrettWrongFormat,
-    SteckerbrettNotInText,
-    ReflectorValueIsUndefined,
+    #SteckerbrettNotInText,
+    #ReflectorValueIsUndefined,
     NoAsciiDetected,
     WrongNumberOfLines,
-    InvalidRotorValues,
-    WrongFileName,
-    UndefinedFileName,
+    #InvalidRotorValues,
+    #WrongFileName,
+    #UndefinedFileName,
     FileNotFound,
-    NoReflectorSelected,
-    InvalidRotorQuantity,
+    #NoReflectorSelected,
+    #InvalidRotorQuantity,
     NoTextToProcess
 )
 
