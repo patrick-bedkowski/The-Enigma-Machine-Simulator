@@ -7,7 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from main import enigma_interface
+from enigma import Enigma_interface
 from enigma_class import Enigma
 
 from exceptions import (
@@ -30,7 +30,7 @@ from exceptions import (
 class EnigmaUi(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
-        self.enigma_interface = enigma_interface(Enigma)
+        self.enigma_interface = Enigma_interface(Enigma)
 
     def setupUi(self, Enigma_ui):
         Enigma_ui.setObjectName("Enigma_ui")
@@ -376,14 +376,14 @@ class EnigmaUi(QtWidgets.QMainWindow):
         self.rotor_layout.addLayout(self.rotor_settings_layout)
         self.retranslateUi(Enigma_ui)
         QtCore.QMetaObject.connectSlotsByName(Enigma_ui)
-        
+
 
     def run_program(self):
         '''
         Main program. First files and settings are send into enigma_gui.py program
         '''
 
-        # if user imported .json file with settings, other settings that 
+        # if user imported .json file with settings, other settings that
         # was inserted will not be inserted into enigma simulator
         #if not self.jsonBrowseFileName:
         '''
@@ -407,7 +407,7 @@ class EnigmaUi(QtWidgets.QMainWindow):
             {self.jsonBrowseFileName}\
             {self.txtBrowseFileName}'
         )
-        
+
         # If inserted path to .txt file is not empty:
         try:
             ciphered_text = self.enigma_interface.input_txt_file_gui(self.txtBrowseFileName)

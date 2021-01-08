@@ -30,7 +30,7 @@ from exceptions import (
 from pyfiglet import Figlet
 text = Figlet(font='big')
 
-class enigma_interface:
+class Enigma_interface:
     def __init__(self, Enigma):
         self._option = '\nPlease, insert correct option number'
         self._name = 'Enigma Simulator'
@@ -508,7 +508,7 @@ def steckerbrett_check_if_value_in_text(steckerbrett_dict, text):
 
 
 def main():
-    enigma = enigma_interface(Enigma)
+    enigma = Enigma_interface(Enigma)
     enigma.start_menu()
 
 if __name__ == '__main__':

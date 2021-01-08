@@ -1,6 +1,6 @@
 from gui import EnigmaUi
 from PyQt5 import QtWidgets
-from main import enigma_interface
+#from main import enigma_interface
 from enigma_class import Enigma
 
 if __name__ == "__main__":
@@ -21,12 +21,12 @@ if __name__ == "__main__":
         # DELETE FROM THIS
         self.enigma = enigma_interface(Enigma)
 
-        
+
         # if "START" button is clicked, get data
         if self.start_button_clicked:
             print('HEEE')
             self.initiate_program()
-    
+
     def initiate_program(self):
         print(self.ui.export_data())
 
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     window = EnigmaWindow()
     window.show()
     # Create interface
-   
+
     # Execute program's main loop
     sys.exit(app.exec_())
 """

@@ -1,5 +1,10 @@
 from string import ascii_uppercase
-from exceptions import (ReflectorValueIsUndefined, InvalidRotorValues, SteckerbrettRepeatedValues,SteckerbrettValueError)
+from exceptions import (
+    ReflectorValueIsUndefined,
+    InvalidRotorValues,
+    SteckerbrettRepeatedValues,
+    SteckerbrettValueError
+)
 
 class Enigma:
 
