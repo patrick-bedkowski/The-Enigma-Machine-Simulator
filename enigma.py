@@ -77,9 +77,6 @@ class Enigma_interface:
         ]
         return assumpions_dist
 
-    def display_assumptions():
-        pass
-
     def start_options(self):
         '''Returns options of intiating simulator'''
         options = [
@@ -108,16 +105,18 @@ class Enigma_interface:
             else:
                 print(self._option)
         # if loop is finished, go to the setting menu
-        # DOESNT LOOK NICE
+        #! DOESNT LOOK NICE
         self.setting_menu()
+        # when all settings are uploaded
         self.initiate_program()
 
+    # method used in gui
     def input_txt_file_gui(self, path_from_gui):
         ciphered_text = read_txt_file(path_from_gui)
         return ciphered_text
 
     def input_txt_file(self):
-        '''User chooses to import file'''
+        '''Imports text from file'''
 
         while True:
             print(self._return_message)
@@ -133,7 +132,7 @@ class Enigma_interface:
             except WrongNumberOfLines as Message:
                 print(f'{Message}. {self._insert_file_path}')
             except NoTextToProcess as Message:
-                    print(f'{Message}. Please, insert file with message')
+                print(f'{Message}. Please, insert file with message')
             except NoAsciiDetected as Message:
                 print(f'{Message}. {self._insert_file_path}')
 
@@ -202,6 +201,7 @@ class Enigma_interface:
             except FileNotFound as Message:
                 print(f'{Message}. {self._insert_file_path}')
 
+    # method used for gui
     def input_json_file_gui(self, path_from_gui):
         if path_from_gui:
             alpha, beta, gama, steckerbrett, reflector = read_json_file(path_from_gui)
@@ -220,6 +220,7 @@ class Enigma_interface:
 
         return list_of_rotors[0], list_of_rotors[1], list_of_rotors[2], steckerbrett, reflector
 
+    '''STECKERBRETT'''
     def insert_steckerbrett_by_hand(self):
         '''Returns inserted steckerbrett formated into dictionary'''
         while True:
@@ -245,7 +246,7 @@ class Enigma_interface:
     def format_to_dict(self, steckenbrett_str):
         '''
         Function is collecting inserted string values of conjugated letters
-        that are separated by a coma. It converts them to a dictionary with
+        that are separated by a comma. It converts them to a dictionary with
         key and value as conjugated letters. Function returns a dictionary.
         This function also checks if letters inserted into steckerbrett
         '''
@@ -255,7 +256,7 @@ class Enigma_interface:
         '''
         # create a new dictionary
         new_dict = {}
-        # split pairs of letters separated by a coma and create a list
+        # split pairs of letters separated by a comma and create a list
         list_of_letter_pairs = steckenbrett_str.split(",")
 
         # iterate through a list containing letters
@@ -292,10 +293,11 @@ class Enigma_interface:
         else:
             return True
 
+    '''ROTORS'''
     def insert_rotors_values(self):
         '''Returns list of rotor values'''
         while True:
-            rotors = input(f'\nInsert three rotor settings separated by coma (numbers 1-26): ')
+            rotors = input(f'\nInsert three rotor settings separated by comma (numbers 1-26): ')
             try:
                 list_of_rotors = self.create_list_of_rotors(rotors)
                 return list_of_rotors
@@ -305,19 +307,19 @@ class Enigma_interface:
                 print(f'{Message}. Insert values once again')
 
     def create_list_of_rotors(self, rotors):
-        '''Returns list of rotor values. Raises Errors, if inserted settings don't meet conditions'''
+        '''Returns list of rotor values. Raises Errors, if inserted settings do not meet conditions'''
         # if rotor is not empty
         if rotors:
             # Raises error if there is hard space or one value is missing in str
             if ' ' in rotors or ',,' in rotors:
                 raise InvalidRotorValues('Invalid rotor values')
 
-            #create list of splited elements separated by a coma
+            #create list of splited elements separated by a comma
             list_of_rotors = rotors.split(',')
 
             if len(list_of_rotors) != 3:
                 raise InvalidRotorQuantity('Invalid rotor quantity')
-            # Raises error if there is empty value like 1,,3
+            # Raises error if there is an empty value like 1,,3
             elif all(list_of_rotors) == False:
                 raise InvalidRotorValues('Invalid rotor values')
             else:
@@ -325,6 +327,7 @@ class Enigma_interface:
         else:
             raise InvalidRotorQuantity('Invalid rotor quantity')
 
+    '''REFLECTOR'''
     def insert_reflector_value(self):
         '''Returns value of reflector'''
         while True:
@@ -332,7 +335,6 @@ class Enigma_interface:
             try:
                 if self.check_if_reflector_inserted(reflector):
                     return reflector
-                #if self.check_if_reflector_has_value(reflector):
             except NoReflectorSelected as Message:
                 print(f'{Message}. Insert values once again')
 
@@ -346,10 +348,8 @@ class Enigma_interface:
             raise NoReflectorSelected('No reflector has been selected')
 
 
-    '''def check_if_reflector_has_value(self, reflector):
-        if not reflector:'''
-
     def initiate_program(self):
+        # start program with parameters
         self.initiate_enigma_simulator(self.alpha,
         self.beta, self.gama, self.steckerbrett,
         self.reflector,
@@ -357,10 +357,9 @@ class Enigma_interface:
 
     '''Initiating program'''
     def initiate_enigma_simulator(self, alpha, beta, gama, steckenbrett, reflector, ciphered_text):
-        '''Enigma Machine Simulator'''
-        '''Here's main algorythm'''
-        # create object of Enigma class
+        '''Here is the main algorythm'''
         try:
+            # create object of Enigma class
             enigma = Enigma(alpha, beta, gama, steckenbrett, reflector)
             processed_text = enigma.encryptingCodec(ciphered_text)
             print(f'\nHere is your encrypted message: {processed_text}')
@@ -368,12 +367,13 @@ class Enigma_interface:
             # Exporting files requires
             # processed text and initial settings
             self.export_txt_menu(processed_text)
-            # If user chosed not to import settings from file
+            # If user has chosen not to import settings from file
             # Exporting settings inserted by hand is available
             if self.choice_import_settings == 'n':
                 self.export_json_menu(enigma.initial_settings)
+
             # print last message
-            print('\nThank you for using my Enigma Machine Simulator')
+            print('\nThank you for using my Enigma Machine Simulator\n')
             '''
             All this exceptions regarding values correctness are raised in enigma_class.py
             '''
@@ -389,8 +389,8 @@ class Enigma_interface:
 
     def initiate_enigma_again(self, Message):
         if self.choice_import_settings == 'y':
-                print(f'{Message}. Seems like imported file contain incorrect rotor values.'+\
-                    '\nPlease restart program with correct settings')
+            print(f'{Message}. Seems like imported file contain incorrect rotor values.'+\
+                '\nPlease restart program with correct settings')
         elif self.choice_import_settings == 'n':
             print(f'{Message}. Insert proper values again.')
             # user must insert all settings again
@@ -455,18 +455,6 @@ class Enigma_interface:
                 print(f'{Message}. Insert proper name for the file')
             except WrongFileName as Message:
                 print(f'{Message}. Give your file a different name')
-
-    '''def exporting_txt_menu(self):
-        while True:
-            try:
-                input_path = input(f'\nWrite file path with extension .json to insert settings into Enigma: ')
-                if input_path:
-                    alpha, beta, gama, steckerbrett, reflector = read_json_file(input_path)
-                    return alpha, beta, gama, steckerbrett, reflector
-                else:  # if input_file is empty, raise error
-                    raise FileNotFound('File was not found')
-            except FileNotFound as Message:
-                print(f'{Message}. {self._insert_file_path}')'''
 
 #! THIS IS REDUNDANT
 def steckerbrett_check_if_value_in_text(steckerbrett_dict, text):
