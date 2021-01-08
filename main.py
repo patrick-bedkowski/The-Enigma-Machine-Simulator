@@ -47,7 +47,7 @@ class enigma_interface:
                 f'{chr(62)} must be inserted as uppercases characters\n'+\
                 f'{chr(62)} must only contain characters of the alphabet in range A-Z'
             ],
-            ['Steckenbrett',
+            ['Steckerbrett',
                 f'{chr(62)} can be left empty\n'+\
                 f'{chr(62)} must be inserted in pair of letters separated by a commas, e.g. AB, CD\n'+\
                 f'{chr(62)} must not hold two identical letters'
@@ -108,11 +108,11 @@ class enigma_interface:
         # DOESNT LOOK NICE
         self.setting_menu()
         self.initiate_program()
-    
+
     def input_txt_file_gui(self, path_from_gui):
         ciphered_text = read_txt_file(path_from_gui)
         return ciphered_text
-    
+
     def input_txt_file(self):
         '''User chooses to import file'''
 
@@ -133,7 +133,7 @@ class enigma_interface:
                     print(f'{Message}. Please, insert file with message')
             except NoAsciiDetected as Message:
                 print(f'{Message}. {self._insert_file_path}')
-    
+
     def input_txt_by_hand(self):
         '''Returns text inserted by a user'''
         while True:
@@ -166,7 +166,7 @@ class enigma_interface:
                 break
             else:
                 print(self._option)
-    
+
     def setting_menu(self):
         # User have a choice to import Enigma Simulator Settings from .json file.
         # If user chooses to import settings, he probably doesn't need to save them later in the program.
@@ -179,7 +179,7 @@ class enigma_interface:
                 # reads data entered by hand
                 self.alpha, self.beta, self.gama, self.steckerbrett, self.reflector = self.import_settings_from_file()
                 break
-            elif self.choice_import_settings == 'n':  
+            elif self.choice_import_settings == 'n':
                 # reads data entered by hand
                 self.alpha, self.beta, self.gama, self.steckerbrett, self.reflector = self.insert_settings_by_hand()
                 break
@@ -191,7 +191,7 @@ class enigma_interface:
         self.beta, self.gama, self.steckerbrett,
         self.reflector,
         self.ciphered_text)
-        
+
     def import_settings_from_file(self):
         '''Reading settings from to .json file'''
         while True:
@@ -204,7 +204,7 @@ class enigma_interface:
                     raise FileNotFound('File was not found')
             except FileNotFound as Message:
                 print(f'{Message}. {self._insert_file_path}')
-    
+
     def input_json_file_gui(self, path_from_gui):
         if path_from_gui:
             alpha, beta, gama, steckerbrett, reflector = read_json_file(path_from_gui)
@@ -220,11 +220,11 @@ class enigma_interface:
         list_of_rotors = self.insert_rotors_values()
         steckerbrett = self.insert_steckerbrett_by_hand()
         reflector = self.insert_reflector_value()
-        
+
         return list_of_rotors[0], list_of_rotors[1], list_of_rotors[2], steckerbrett, reflector
 
     def insert_steckerbrett_by_hand(self):
-        '''Returns inserted steckerbrett values and formated into dictionary'''
+        '''Returns inserted steckerbrett formated into dictionary'''
         while True:
             steckerbrett = input(f'\nInsert Steckerbreit values that you want to switch in format "AB,CD": ')
             if steckerbrett:
@@ -238,6 +238,9 @@ class enigma_interface:
                     print(f'{Message}. Insert values once again')
                 except SteckerbrettNotInText as Message:
                     print(f'{Message}. Insert values once again')
+                except SteckerbrettRepeatedValues as Message:
+                    print(f'{Message}. Insert values once again')
+
             else:
                 # Steckerbrett can have empty str value
                 return steckerbrett
@@ -248,11 +251,10 @@ class enigma_interface:
         that are separated by a coma. It converts them to a dictionary with
         key and value as conjugated letters. Function returns a dictionary.
         This function also checks if letters inserted into steckerbrett
-        have no empty spaces.
         '''
         '''
         Values must be inserted like so AB,CD
-        This function will convert str value to dictionary like: {'a': 'b', 'c': 'd'}
+        This function will convert str value to dictionary like: {'A': 'B', 'C': 'D'}
         '''
         # create a new dictionary
         new_dict = {}
@@ -263,17 +265,30 @@ class enigma_interface:
         for letter_pair in list_of_letter_pairs:
 
             if len(letter_pair) == 2:
-                # checks if there is blank space in a pair of letters
-                # I did not implement another function to check that condition,
-                # because it is connected with the code in this function
-                if " " in letter_pair:
-                    # raise an exception about wrong Steckerbrett formating
-                    raise SteckerbrettWrongFormat('Steckerbrett has wrong format')
+                # check if there is blank space in a pair of letters
+                self.check_if_key_contain_space(letter_pair)
+                # check if first letter in pair is not present in the new dictionary as key
+                self.check_if_key_is_not_repeated(letter_pair, new_dict)
             else:
                 raise SteckerbrettWrongFormat('Steckerbrett has wrong format')
             # pairs of conjugated letters are updated into new dictionary
             new_dict.update({letter_pair[0]: letter_pair[1]})
         return new_dict
+
+    def check_if_key_contain_space(self, letter_pair):
+        if " " in letter_pair:
+            # raise an exception about wrong Steckerbrett formating
+            raise SteckerbrettWrongFormat('Steckerbrett has wrong format')
+
+    def check_if_key_is_not_repeated(self, letter_pair, new_dict):
+        # if dictionary is not empty
+        if new_dict:
+            # iterate through keys and values
+            for key, value in new_dict.items():
+                # check if first letter of pair is not in the dictionary as a key
+                # When that happens python would simply change value of the inserted key
+                if letter_pair[0] == key:
+                    raise SteckerbrettRepeatedValues('Steckerbrett must have different values')
 
     def insert_rotors_values(self):
         '''Returns list of rotor values'''
@@ -295,7 +310,7 @@ class enigma_interface:
             if ' ' in rotors or ',,' in rotors:
                 raise InvalidRotorValues('Invalid rotor values')
 
-            #create list of splited elements separated by a coma 
+            #create list of splited elements separated by a coma
             list_of_rotors = rotors.split(',')
 
             if len(list_of_rotors) != 3:
@@ -315,10 +330,10 @@ class enigma_interface:
             try:
                 if self.check_if_reflector_inserted(reflector):
                     return reflector
-                #if self.check_if_reflector_has_value(reflector): 
+                #if self.check_if_reflector_has_value(reflector):
             except NoReflectorSelected as Message:
                 print(f'{Message}. Insert values once again')
-    
+
     def check_if_reflector_inserted(self, reflector):
         '''Returns true, if the reflector value has been inserted.
         Note that this function does not check the correctness of the input value.
@@ -331,8 +346,8 @@ class enigma_interface:
 
     '''def check_if_reflector_has_value(self, reflector):
         if not reflector:'''
-            
-    
+
+
     '''Initiating program'''
     def initiate_enigma_simulator(self, alpha, beta, gama, steckenbrett, reflector, ciphered_text):
         '''Enigma Machine Simulator'''
@@ -344,10 +359,10 @@ class enigma_interface:
             print(f'\nHere is your encrypted message: {processed_text}')
 
             # Exporting files requires
-            # processed text and initial settings 
+            # processed text and initial settings
             self.export_txt_menu(processed_text)
             # If user chosed not to import settings from file
-            # Exporting settings inserted by hand is available 
+            # Exporting settings inserted by hand is available
             if self.choice_import_settings == 'n':
                 self.export_json_menu(enigma.initial_settings)
             # print last message
@@ -394,9 +409,9 @@ class enigma_interface:
                 # user must insert all settings again
                 alpha, beta, gama, steckerbrett, reflector = self.insert_settings_by_hand()
                 self.initiate_enigma_simulator(alpha, beta, gama, steckerbrett, reflector, self.ciphered_text)
-            
 
-    
+
+
     '''
     TXT FILE EXPORTING PART
     '''
@@ -468,7 +483,7 @@ class enigma_interface:
             except FileNotFound as Message:
                 print(f'{Message}. {self._insert_file_path}')'''
 
-
+#! THIS IS REDUNDANT
 def steckerbrett_check_if_value_in_text(steckerbrett_dict, text):
     '''
     This function checks if characters inserted into steckerbrett pairs'

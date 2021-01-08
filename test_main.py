@@ -6,10 +6,12 @@ from exceptions import (
     InvalidRotorValues,
     NoReflectorSelected,
     InvalidRotorQuantity,
-    ReflectorValueIsUndefined
+    SteckerbrettRepeatedValues
 )
 # this module is neccessary to test function with inputs
 from io import StringIO
+
+'''FORMAT Steckerbrett to dictionary'''
 
 def test_format_dict():
     enigma_if = enigma_interface(Enigma)
@@ -34,7 +36,27 @@ def test_format_dict_wrong_format_3():
     with pytest.raises(SteckerbrettWrongFormat):
         enigma_if.format_to_dict(steckenbrett_str)
 
+def test_format_dict_repeated_key_in_another_key():
+    enigma_if = enigma_interface(Enigma)
+    steckenbrett_str = 'AB,AC'
+    with pytest.raises(SteckerbrettRepeatedValues):
+        enigma_if.format_to_dict(steckenbrett_str)
+
+"""def test_format_dict_repeated_key_in_another_key():
+    list1 = ['AB','AC']
+    dict1 = {}
+    for pair in list1:
+        # if dictionary not empty
+        if dict1:
+            for key, value in dict1.items():
+                if pair[0] == key:
+                    raise ValueError
+        else:
+            dict1.update({key: value})"""
+
+
 '''Tests of Manually inserting rotors value'''
+
 def test_insert_proper_rotors_values():
     enigma_if = enigma_interface(Enigma)
     rotors ='1,4,5'

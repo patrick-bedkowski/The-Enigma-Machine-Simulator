@@ -46,7 +46,7 @@ def test_initial_settings():
         "steckenbrett": {'A': 'B', 'C': 'D'},
         "reflector": 'A'
     }
-    
+
 '''
 TEST Steckerbrett
 '''
@@ -59,7 +59,7 @@ def test_steckerbrett_check_values_correct():
 
 def test_steckerbrett_value_not_in_ascii():
     steckerbrett_dict = {"A": "3", "C": "D"}
-    
+
     with pytest.raises(SteckerbrettValueError):
         enigma = Enigma(steckerbrett = steckerbrett_dict)
 
@@ -78,11 +78,7 @@ def test_steckerbrett_key_and_value_have_same_value():
     with pytest.raises(SteckerbrettRepeatedValues):
         enigma = Enigma(steckerbrett = steckerbrett_dict)
 
-def test_steckerbrett_key_is_repeated():
-    steckerbrett_dict = {"A": "B", "A": "C"}
-    with pytest.raises(SteckerbrettRepeatedValues):
-        enigma = Enigma(steckerbrett = steckerbrett_dict)
-    
+
 def test_steckerbrett_key_is_repeated_in_values():
     steckerbrett_dict = {"A": "B", "C": "A"}
     with pytest.raises(SteckerbrettRepeatedValues):
@@ -108,7 +104,7 @@ def test_alphabet():
 def test_initaite_reflector_A():
     enigma = Enigma(reflector = 'A')
     assert enigma._reflector_alphabet == [
-        'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 
+        'V', 'W', 'X', 'Y', 'Z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
         'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U'
     ]
 
@@ -152,7 +148,7 @@ def test_turn_rotors():
     enigma.turn_rotors()
     assert enigma.alpha() == 2
     assert enigma.beta() == 1
-    assert enigma.gama() == 1 
+    assert enigma.gama() == 1
 
 def test_turn_rotors_border_value_A():
     alpha = 26
@@ -183,7 +179,7 @@ def test_turn_rotors_border_value_A_and_B():
     assert enigma.alpha() == 1
     assert enigma.beta() == 1
     assert enigma.gama() == 2
-    
+
 def test_turn_rotors_border_value_all_rotors():
     alpha = 26
     beta = 26
