@@ -313,15 +313,21 @@ class enigma_interface:
         while True:
             reflector = input(f'\nWhich reflector would you like to choose? (A, B, C): ')
             try:
-                '''WEŹ TO PRZENIEŚ do osobnej funkcji i wtedy będziesz mógł testować z łatowścią'''
-                if reflector:
+                if self.check_if_reflector_inserted(reflector):
                     return reflector
-                else:
-                    raise NoReflectorSelected('No reflector has been selected')
                 #if self.check_if_reflector_has_value(reflector): 
             except NoReflectorSelected as Message:
                 print(f'{Message}. Insert values once again')
     
+    def check_if_reflector_inserted(self, reflector):
+        '''Returns true, if the reflector value has been inserted.
+        Note that this function does not check the correctness of the input value.
+        This condition is checked in the enigma_class file'''
+        if reflector:
+            return True
+        else:
+            raise NoReflectorSelected('No reflector has been selected')
+
 
     '''def check_if_reflector_has_value(self, reflector):
         if not reflector:'''

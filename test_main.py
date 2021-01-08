@@ -58,6 +58,8 @@ def test_insert_not_enough_values_of_rotors():
     with pytest.raises(InvalidRotorQuantity):
         enigma_if.create_list_of_rotors(rotors)
 
+# two upcoming tests, show the use of StringIO module to monkeypatch inputs
+
 def test_reflector_correct_value(monkeypatch):
     enigma_if = enigma_interface(Enigma)
     # Monkey patch input() function
@@ -76,12 +78,12 @@ def test_reflector_incorrect_value(monkeypatch):
     monkeypatch.setattr('sys.stdin', StringIO('D'))
     assert enigma_if.insert_reflector_value() == 'D'
 
-def test_reflector_empty(monkeypatch):
+def test_reflector_empty():
     enigma_if = enigma_interface(Enigma)
     # Monkey patch input() function
-    monkeypatch.setattr('sys.stdin', StringIO('\n'))
+    reflector = ''
     with pytest.raises(NoReflectorSelected):
-        enigma_if.insert_reflector_value()
+        enigma_if.check_if_reflector_inserted(reflector)
 
 '''
 Szanowny Panie, 
