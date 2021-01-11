@@ -287,6 +287,7 @@ class Enigma_interface:
             for key in new_dict.keys():
                 # check if first letter of pair is not in the dictionary as a key
                 # When that happens python would simply change value of the inserted key
+                # It is necessary to check that condition in this module
                 if letter_pair[0] == key:
                     raise SteckerbrettRepeatedValues('Steckerbrett must have different values')
                 else:
