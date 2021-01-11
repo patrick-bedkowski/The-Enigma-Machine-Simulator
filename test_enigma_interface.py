@@ -1,4 +1,4 @@
-from enigma import Enigma_interface
+from enigma_interface import Enigma_interface
 from enigma_class import Enigma
 import pytest
 from exceptions import (

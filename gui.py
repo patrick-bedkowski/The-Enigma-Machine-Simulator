@@ -51,7 +51,7 @@ class EnigmaUi(QtWidgets.QMainWindow):
         self.debugTextBrowser.setSizePolicy(sizePolicy)
         self.debugTextBrowser.setObjectName("debugTextBrowser")
         self.enigma_label = QtWidgets.QLabel(Enigma_ui)
-        self.enigma_label.setGeometry(QtCore.QRect(10, 10, 251, 25))
+        self.enigma_label.setGeometry(QtCore.QRect(10, 10, 280, 25))
         font = QtGui.QFont()
         font.setFamily("Lato")
         font.setPointSize(16)
@@ -318,23 +318,23 @@ class EnigmaUi(QtWidgets.QMainWindow):
         self.beta_combo.setObjectName("beta_combo")
         self.rotor_setting_beta_layout.addWidget(self.beta_combo)
 
-        # Gama Rotor
+        # gamma Rotor
         self.rotor_settings_layout.addLayout(self.rotor_setting_beta_layout)
-        self.rotor_setting_gama_layout = QtWidgets.QVBoxLayout()
-        self.rotor_setting_gama_layout.setSpacing(3)
-        self.rotor_setting_gama_layout.setObjectName("rotor_setting_gama_layout")
-        self.gama_label = QtWidgets.QLabel(self.layoutWidget3)
+        self.rotor_setting_gamma_layout = QtWidgets.QVBoxLayout()
+        self.rotor_setting_gamma_layout.setSpacing(3)
+        self.rotor_setting_gamma_layout.setObjectName("rotor_setting_gamma_layout")
+        self.gamma_label = QtWidgets.QLabel(self.layoutWidget3)
         font = QtGui.QFont()
         font.setFamily("Lato")
-        self.gama_label.setFont(font)
-        self.gama_label.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignHCenter)
-        self.gama_label.setObjectName("gama_label")
-        self.rotor_setting_gama_layout.addWidget(self.gama_label)
-        self.gama_combo = QtWidgets.QComboBox(self.layoutWidget3)
+        self.gamma_label.setFont(font)
+        self.gamma_label.setAlignment(QtCore.Qt.AlignBottom|QtCore.Qt.AlignHCenter)
+        self.gamma_label.setObjectName("gamma_label")
+        self.rotor_setting_gamma_layout.addWidget(self.gamma_label)
+        self.gamma_combo = QtWidgets.QComboBox(self.layoutWidget3)
         font = QtGui.QFont()
         font.setFamily("Lato")
-        self.gama_combo.setFont(font)
-        self.gama_combo.setObjectName("gama_combo")
+        self.gamma_combo.setFont(font)
+        self.gamma_combo.setObjectName("gamma_combo")
 
         '''
         Welcoming text at the start of the program
@@ -369,10 +369,10 @@ class EnigmaUi(QtWidgets.QMainWindow):
         for number in range(0,26):
             self.alpha_combo.addItem("")
             self.beta_combo.addItem("")
-            self.gama_combo.addItem("")
+            self.gamma_combo.addItem("")
 
-        self.rotor_setting_gama_layout.addWidget(self.gama_combo)
-        self.rotor_settings_layout.addLayout(self.rotor_setting_gama_layout)
+        self.rotor_setting_gamma_layout.addWidget(self.gamma_combo)
+        self.rotor_settings_layout.addLayout(self.rotor_setting_gamma_layout)
         self.rotor_layout.addLayout(self.rotor_settings_layout)
         self.retranslateUi(Enigma_ui)
         QtCore.QMetaObject.connectSlotsByName(Enigma_ui)
@@ -401,7 +401,7 @@ class EnigmaUi(QtWidgets.QMainWindow):
         self.debugTextBrowser.setText(
             f'{self.alpha},\
             {self.beta},\
-            {self.gama},\
+            {self.gamma},\
             {self.steckerbrett},\
             {self.reflector},\
             {self.jsonBrowseFileName}\
@@ -425,13 +425,13 @@ class EnigmaUi(QtWidgets.QMainWindow):
         # If inserted path to .json file is not empty:
         if self.jsonBrowseFileName:
             try:
-                self.alpha, self.beta, self.gama, self.steckerbrett, self.reflector = self.enigma_interface.input_json_file_gui(self.jsonBrowseFileName)
+                self.alpha, self.beta, self.gamma, self.steckerbrett, self.reflector = self.enigma_interface.input_json_file_gui(self.jsonBrowseFileName)
             except FileNotFound as Message:
                 self.print_messages(Message)
 
         self.steckerbrett_format_dict()
 
-        enigma = Enigma(self.alpha, self.beta, self.gama, self.steckerbrett, self.reflector)
+        enigma = Enigma(self.alpha, self.beta, self.gamma, self.steckerbrett, self.reflector)
         processed_text = enigma.encryptingCodec(ciphered_text)
         self.print_messages(processed_text)
 
@@ -458,7 +458,7 @@ class EnigmaUi(QtWidgets.QMainWindow):
         data_to_return = [
             self.alpha,
             self.beta,
-            self.gama,
+            self.gamma,
             self.steckerbrett,
             self.reflector
         ]
@@ -469,7 +469,7 @@ class EnigmaUi(QtWidgets.QMainWindow):
         '''Returns values selected from comboboxes'''
         self.alpha = self.alpha_combo.currentText()
         self.beta = self.beta_combo.currentText()
-        self.gama = self.gama_combo.currentText()
+        self.gamma = self.gamma_combo.currentText()
 
     def print_messages(self, message):
         '''Shows text to user'''
@@ -511,7 +511,8 @@ class EnigmaUi(QtWidgets.QMainWindow):
 
     def retranslateUi(self, Enigma_ui):
         _translate = QtCore.QCoreApplication.translate
-        Enigma_ui.setWindowTitle(_translate("Enigma_ui", "Enigma_ui"))
+        Enigma_ui.setWindowTitle("Enigma Machine Simulator")
+        Enigma_ui.setWindowIcon(QtGui.QIcon('encryption.png'))
         self.enigma_label.setText(_translate("Enigma_ui", "Enigma Machine Simulator"))
         self.start_button.setText(_translate("Enigma_ui", "START MACHINE"))
         self.export_button_json_label.setText(_translate("Enigma_ui", "Save Enigma settings into .json file"))
@@ -530,14 +531,14 @@ class EnigmaUi(QtWidgets.QMainWindow):
         self.rotor_settings_label.setText(_translate("Enigma_ui", "Insert initial Rotors settings"))
         self.alpha_label.setText(_translate("Enigma_ui", "Alpha Rotor"))
         self.beta_label.setText(_translate("Enigma_ui", "Beta Rotor"))
-        self.gama_label.setText(_translate("Enigma_ui", "Gama Rotor"))
+        self.gamma_label.setText(_translate("Enigma_ui", "Gamma Rotor"))
 
-        '''Set alpha, beta, gama combo'''
+        '''Set alpha, beta, gamma combo'''
         '''looks cleaner, then code created automatically by QTDesigner'''
         for number in range(0,26):
             self.alpha_combo.setItemText(number, _translate("Enigma_ui", f"{number+1}"))
             self.beta_combo.setItemText(number, _translate("Enigma_ui", f"{number+1}"))
-            self.gama_combo.setItemText(number, _translate("Enigma_ui", f"{number+1}"))
+            self.gamma_combo.setItemText(number, _translate("Enigma_ui", f"{number+1}"))
 
 '''
 Create a Controller class to connect the GUI and the model

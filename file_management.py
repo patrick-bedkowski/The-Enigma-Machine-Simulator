@@ -19,10 +19,6 @@ def check_if_ascii(letter):  # checks if input is in ascii uppercases
     else:
         return False
 
-def get_input(text):
-    return input(text)
-
-
 '''
 .txt file operations
 '''
@@ -65,11 +61,12 @@ def save_txt_file(text):
     User enters name of the file that will be created.
     Later that name is checked for unallowable characters
     '''
-    # I implemented function "get_input" so It will be possible to monkeypatch it if I want to return empty input
-    name_of_the_file = get_input('\nGive your file a name. Extension will be added automatically : ')
+    name_of_the_file = input('\nGive your file a name. Extension will be added automatically : ')
     if name_of_the_file:  # if name was inserted
         for letter in name_of_the_file:  # iterate through every letter
-            if check_if_ascii(letter) or letter.isdigit():  # if letter mets assumpions continue
+            # letter is checked for characters from ascii alphabet
+            # letter is inserted to function as formatted for uppercase character to fit condition in this function
+            if check_if_ascii(letter.upper()) or letter.isdigit():  # if letter mets assumpions continue
                 continue
             else:
                 raise WrongFileName('File name assumpions were not met')
@@ -99,10 +96,10 @@ def save_json_file(settings):
     machine to the json file
     '''
 
-    name_of_the_file = get_input('\nGive your file a name. Extension will be added automatically : ')
+    name_of_the_file = input('\nGive your file a name. Extension will be added automatically : ')
     if name_of_the_file:  # if name was inserted
         for letter in name_of_the_file:  # iterate through every letter
-            if check_if_ascii(letter) or letter.isdigit():  # if letter mets assumpions continue
+            if check_if_ascii(letter.upper()) or letter.isdigit():  # if letter mets assumpions continue
                 continue
             else:
                 raise WrongFileName('File name assumpions were not met')
