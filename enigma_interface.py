@@ -94,10 +94,10 @@ class Enigma_interface:
         while True:
             choice = input(f'\nInsert a number of option that you want to use: ')
             if choice == '1':
-                ciphered_text = self.input_txt_file()
+                self.ciphered_text = self.input_txt_file()
                 break
             elif choice == '2':
-                ciphered_text = self.input_txt_by_hand()
+                self.ciphered_text = self.input_txt_by_hand()
                 break
             elif choice == '3':
                 # print design assumptions
@@ -108,7 +108,7 @@ class Enigma_interface:
         # if loop is finished, go to the setting menu
         alpha, beta, gamma, steckerbrett, reflector = self.setting_menu()
         # when all settings are uploaded
-        self.initiate_enigma_simulator(alpha, beta, gamma, steckerbrett, reflector, ciphered_text)
+        self.initiate_enigma_simulator(alpha, beta, gamma, steckerbrett, reflector, self.ciphered_text)
 
     # method used in gui
     def input_txt_file_gui(self, path_from_gui):
@@ -174,13 +174,15 @@ class Enigma_interface:
         # If user chooses to import settings, he probably doesn't need to save them later in the program.
         # The choice will be remembered and used to initiate "save_json_file" block
         while True:
-            self.choice_import_settings = input(
+            choice_import_settings = input(
                 f'\nWould you like to import Enigma settings from the json file? y/n: '
             )
-            if self.choice_import_settings == 'y':
+            if choice_import_settings == 'y':
+                self.choice_import_settings = choice_import_settings
                 # reads data entered by hand
                 alpha, beta, gamma, steckerbrett, reflector = self.import_settings_from_file()
-            elif self.choice_import_settings == 'n':
+            elif choice_import_settings == 'n':
+                self.choice_import_settings = choice_import_settings
                 # reads data entered by hand
                 alpha, beta, gamma, steckerbrett, reflector = self.insert_settings_by_hand()
             else:
@@ -396,7 +398,7 @@ class Enigma_interface:
         '''Saving message to .txt file'''
         choice = None
         while choice != 'n':
-            choice = input(f'\nWould you like create a file with ciphered text saved? y/n: ')
+            choice = input(f'\nWould you like to create a file with ciphered text saved? y/n: ')
             try:
                 if choice == 'y':
                     self.export_txt_file(processed_text)
