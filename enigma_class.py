@@ -113,8 +113,7 @@ class Enigma:
                 raise SteckerbrettRepeatedValues('Steckerbrett must have different values')
             else:
                 # if key, value repetition has not been detected, append them into detection list
-                detected_values_keys.append(key)
-                detected_values_keys.append(value)
+                detected_values_keys.extend([key, value])
         # return information that repetition of the values has not been detected
         return True
 

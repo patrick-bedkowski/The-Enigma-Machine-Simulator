@@ -284,7 +284,7 @@ class Enigma_interface:
         # if dictionary is not empty
         if new_dict:
             # iterate through keys and values
-            for key, value in new_dict.items():
+            for key in new_dict.keys():
                 # check if first letter of pair is not in the dictionary as a key
                 # When that happens python would simply change value of the inserted key
                 if letter_pair[0] == key:
