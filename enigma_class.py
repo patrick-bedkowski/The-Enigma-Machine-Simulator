@@ -3,26 +3,19 @@ from exceptions import (
     ReflectorValueIsUndefined,
     InvalidRotorValues,
     SteckerbrettRepeatedValues,
-    SteckerbrettValueError
+    SteckerbrettValueError,
+    InvalidRotorQuantity
 )
 
 class Enigma:
 
-    def __init__(self, alpha = 1, beta = 1, gamma = 1, steckerbrett = {}, reflector = 'A'):
+    def __init__(self, list_of_rotors = [1, 1, 1], steckerbrett = {}, reflector = 'A'):
         '''
         Class Enigma. Contains attributes:
 
-        :param alpha: initial alpha setting of the rotor
-        :type alphat: int
-        :default alpha: 1
-
-        :param beta: initial beta setting of the rotor
-        :type beta: int
-        :default beta: 1
-
-        :param gamma: initial gamma setting of the rotor
-        :type gamma: int
-        :default gamma: 1
+        :param list_of_rotors: initial rotor settings
+        :type list_of_rotors: list
+        :default list_of_rotors: [1, 1, 1]
 
         :param steckerbrett: Steckerbrett shows which letters should replace each other
         :type steckerbrett: dict
@@ -35,14 +28,18 @@ class Enigma:
 
         '''
         ascii_uppercase is a string holding "ABCDEF..."
-        Atribute is holding list consisting of ascii_uppercase characters
+        Alphabet atribute is holding list consisting of ascii_uppercase characters
         '''
         self._alphabet = [letter for letter in ascii_uppercase]
 
         '''Checks rotor values'''
-        self._alpha = self.check_set_rotor_value(alpha)
-        self._beta = self.check_set_rotor_value(beta)
-        self._gamma = self.check_set_rotor_value(gamma)
+        if len(list_of_rotors) == 3:
+            self._alpha = self.check_set_rotor_value(list_of_rotors[0])
+            self._beta = self.check_set_rotor_value(list_of_rotors[1])
+            self._gamma = self.check_set_rotor_value(list_of_rotors[2])
+            self._list_of_rotors = list_of_rotors
+        else:
+            raise InvalidRotorQuantity('Invalid rotor quantity')
 
         # If steckerbrett has been inserted, check its content
         if steckerbrett:
@@ -76,6 +73,9 @@ class Enigma:
 
     def gamma(self):
         return self._gamma
+
+    def list_of_rotors(self):
+        return self._list_of_rotors
 
     def steckerbrett(self):
         return self._steckerbrett
@@ -177,18 +177,10 @@ class Enigma:
         '''
         # Creating dictionary to store initial settings
         enigma_settings = {}
-        enigma_settings['rotors'] = self.group_rotors()
+        enigma_settings['rotors'] = self._list_of_rotors
         enigma_settings['steckenbrett'] = self._steckerbrett
         enigma_settings['reflector'] = self._reflector
         return enigma_settings
-
-    def group_rotors(self):
-        '''
-        Returns list grouped values of each rotor.
-        First index indicates the rotor which is the first to receive ciphered text.
-        '''
-        return [self._alpha, self._beta, self._gamma]
-
 
     '''Heart of an algorythm.'''
 

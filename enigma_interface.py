@@ -38,7 +38,7 @@ class Enigma_interface:
         self._return_message = '\nIf you wish to return to main menu, type "y": '
         self.choice_import_settings = None
 
-    def design_assumptions(self): #! przenieść do enigmy.py
+    def design_assumptions(self):
         '''
         Asumptions for the inputs. It descibes how to insert values properly
         '''
@@ -106,13 +106,27 @@ class Enigma_interface:
             else:
                 print(self._option)
         # if loop is finished, go to the setting menu
-        alpha, beta, gamma, steckerbrett, reflector = self.setting_menu()
+        list_of_rotors, steckerbrett, reflector = self.setting_menu()
         # when all settings are uploaded
-        self.initiate_enigma_simulator(alpha, beta, gamma, steckerbrett, reflector, self.ciphered_text)
+        self.initiate_enigma_simulator(list_of_rotors, steckerbrett, reflector, self.ciphered_text)
 
-    # method used in gui
-    def input_txt_file_gui(self, path_from_gui):
-        ciphered_text = read_txt_file(path_from_gui)
+    '''DISPLAY ASSUMPTIONS'''
+
+    def display_assumptions(self):
+        print(tabulate(self.design_assumptions(), tablefmt='fancy_grid'))
+        while True:
+            choice = input(self._return_message)
+            if choice == 'y':
+                self.start_menu()
+                break
+            else:
+                print(self._option)
+
+    '''INPUT TXT PART'''
+
+    def read_from_txt_file(self, path):
+        '''Returns ciphered text as string'''
+        ciphered_text = read_txt_file(path)
         return ciphered_text
 
     def input_txt_file(self):
@@ -125,7 +139,7 @@ class Enigma_interface:
                 self.start_menu()
                 break
             try:
-                ciphered_text = read_txt_file(input_file)
+                ciphered_text = read_from_txt_file(input_file)
                 return ciphered_text
             except FileNotFound as Message:
                 print(f'{Message}. {self._insert_file_path}')
@@ -135,6 +149,8 @@ class Enigma_interface:
                 print(f'{Message}. Please, insert file with message')
             except NoAsciiDetected as Message:
                 print(f'{Message}. {self._insert_file_path}')
+
+    '''INPUT TXT MANUALLY'''
 
     def input_txt_by_hand(self):
         '''Returns text inserted by a user'''
@@ -159,16 +175,6 @@ class Enigma_interface:
             except NoAsciiDetected as Message:
                     print(f'{Message}. Please, insert message again')
 
-    def display_assumptions(self):
-        print(tabulate(self.design_assumptions(), tablefmt='fancy_grid'))
-        while True:
-            choice = input(self._return_message)
-            if choice == 'y':
-                self.start_menu()
-                break
-            else:
-                print(self._option)
-
     def setting_menu(self):
         # User have a choice to import Enigma Simulator Settings from .json file.
         # If user chooses to import settings, he probably doesn't need to save them later in the program.
@@ -178,17 +184,20 @@ class Enigma_interface:
                 f'\nWould you like to import Enigma settings from the json file? y/n: '
             )
             if choice_import_settings == 'y':
+                # saves user's choice for later use
                 self.choice_import_settings = choice_import_settings
                 # reads data entered by hand
-                alpha, beta, gamma, steckerbrett, reflector = self.import_settings_from_file()
+                list_of_rotors, steckerbrett, reflector = self.import_settings_from_file()
             elif choice_import_settings == 'n':
                 self.choice_import_settings = choice_import_settings
                 # reads data entered by hand
-                alpha, beta, gamma, steckerbrett, reflector = self.insert_settings_by_hand()
+                list_of_rotors, steckerbrett, reflector = self.insert_settings_by_hand()
             else:
                 print(self._option)
             # return settings
-            return alpha, beta, gamma, steckerbrett, reflector
+            return list_of_rotors, steckerbrett, reflector
+
+    '''IMPORT SETTINGS FROM JSON'''
 
     def import_settings_from_file(self):
         '''Reading settings from to .json file'''
@@ -196,21 +205,23 @@ class Enigma_interface:
             try:
                 input_path = input(f'\nWrite file path with extension .json to insert settings into Enigma: ')
                 if input_path:
-                    alpha, beta, gamma, steckerbrett, reflector = read_json_file(input_path)
-                    return alpha, beta, gamma, steckerbrett, reflector
+                    list_of_rotors, steckerbrett, reflector = self.read_json_file_method(input_path)
+                    return list_of_rotors, steckerbrett, reflector
                 else:  # if input_file is empty, raise error
                     raise FileNotFound('File was not found')
             except FileNotFound as Message:
                 print(f'{Message}. {self._insert_file_path}')
 
-    # method used for gui
-    def input_json_file_gui(self, path_from_gui):
-        if path_from_gui:
-            alpha, beta, gamma, steckerbrett, reflector = read_json_file(path_from_gui)
-            return alpha, beta, gamma, steckerbrett, reflector
-        else:  # if input_file is empty, raise error
-            raise FileNotFound('File was not found')
+    def read_json_file_method(self, input_path):
+        #try:
+        list_of_rotors, steckerbrett, reflector = read_json_file(input_path)
+        return list_of_rotors, steckerbrett, reflector
+        #except FileNotFound as Message:
+        #    print(f'{Message}. {self._insert_file_path}')
 
+    '''INSERT SETTINGS MANUALLY'''
+
+    '''ROTORS'''
     def insert_settings_by_hand(self):
         '''
         Returns values of rotors in a list, steckerbrett as dictionary, reflector as str
@@ -219,8 +230,7 @@ class Enigma_interface:
         list_of_rotors = self.insert_rotors_values()
         steckerbrett = self.insert_steckerbrett_by_hand()
         reflector = self.insert_reflector_value()
-
-        return list_of_rotors[0], list_of_rotors[1], list_of_rotors[2], steckerbrett, reflector
+        return list_of_rotors, steckerbrett, reflector
 
     '''STECKERBRETT'''
     def insert_steckerbrett_by_hand(self):
@@ -244,7 +254,7 @@ class Enigma_interface:
                 # Steckerbrett can have empty str value
                 return steckerbrett
 
-    def format_to_dict(self, steckenbrett_str):
+    def format_to_dict(self, steckerbrett_str):
         '''
         Function is collecting inserted string values of conjugated letters
         that are separated by a comma. It converts them to a dictionary with
@@ -258,19 +268,21 @@ class Enigma_interface:
         # create a new dictionary
         new_dict = {}
         # split pairs of letters separated by a comma and create a list
-        list_of_letter_pairs = steckenbrett_str.split(",")
+        list_of_letter_pairs = steckerbrett_str.split(",")
 
-        # iterate through a list containing letters
-        for letter_pair in list_of_letter_pairs:
-            if len(letter_pair) == 2:
-                # check if there is hard space in a pair of letters
-                # check if first letter in pair is not present in the new dictionary as key
-                if self.check_if_key_contain_space(letter_pair):
-                    if self.check_if_key_is_not_repeated(letter_pair, new_dict):
-                        new_dict.update({letter_pair[0]: letter_pair[1]})
-            else:
-                raise SteckerbrettWrongFormat('Steckerbrett has wrong format')
-            # pairs of conjugated letters are updated into new dictionary
+        # if steckerbrett inserted
+        if steckerbrett_str:
+            # iterate through a list containing letters
+            for letter_pair in list_of_letter_pairs:
+                if len(letter_pair) == 2:
+                    # check if there is hard space in a pair of letters
+                    # check if first letter in pair is not present in the new dictionary as key
+                    if self.check_if_key_contain_space(letter_pair):
+                        if self.check_if_key_is_not_repeated(letter_pair, new_dict):
+                            new_dict.update({letter_pair[0]: letter_pair[1]})
+                else:
+                    raise SteckerbrettWrongFormat('Steckerbrett has wrong format')
+                # pairs of conjugated letters are updated into new dictionary
         return new_dict
 
     def check_if_key_contain_space(self, letter_pair):
@@ -319,10 +331,8 @@ class Enigma_interface:
             #create list of splited elements separated by a comma
             list_of_rotors = rotors.split(',')
 
-            if len(list_of_rotors) != 3:
-                raise InvalidRotorQuantity('Invalid rotor quantity')
             # Raises error if there is an empty value like 1,,3
-            elif all(list_of_rotors) == False:
+            if all(list_of_rotors) == False:
                 raise InvalidRotorValues('Invalid rotor values')
             else:
                 return list_of_rotors
@@ -351,11 +361,11 @@ class Enigma_interface:
 
     '''Initiating program'''
 
-    def initiate_enigma_simulator(self, alpha, beta, gamma, steckenbrett, reflector, ciphered_text):
+    def initiate_enigma_simulator(self, list_of_rotors, steckerbrett, reflector, ciphered_text):
         '''Here is the main algorythm'''
         try:
             # create object of Enigma class
-            enigma = Enigma(alpha, beta, gamma, steckenbrett, reflector)
+            enigma = Enigma(list_of_rotors, steckerbrett, reflector)
             processed_text = enigma.encryptingCodec(ciphered_text)
             print(f'\nHere is your encrypted message: {processed_text}')
 
@@ -389,8 +399,8 @@ class Enigma_interface:
         elif self.choice_import_settings == 'n':
             print(f'{Message}. Insert proper values again.')
             # user must insert all settings again
-            alpha, beta, gamma, steckerbrett, reflector = self.insert_settings_by_hand()
-            self.initiate_enigma_simulator(alpha, beta, gamma, steckerbrett, reflector, self.ciphered_text)
+            list_of_rotors, steckerbrett, reflector = self.insert_settings_by_hand()
+            self.initiate_enigma_simulator(list_of_rotors, steckerbrett, reflector, self.ciphered_text)
 
     '''
     TXT FILE EXPORTING PART

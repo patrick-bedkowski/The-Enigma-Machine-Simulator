@@ -42,6 +42,7 @@ def test_format_dict_repeated_key_in_another_key():
     with pytest.raises(SteckerbrettRepeatedValues):
         enigma_if.format_to_dict(steckenbrett_str)
 
+'''REFLECTOR'''
 
 # two upcoming tests, show the use of StringIO module to monkeypatch inputs
 
@@ -113,9 +114,9 @@ def test_insert_rotors_empty_borders():
     with pytest.raises(InvalidRotorValues):
         enigma_if.create_list_of_rotors(rotors)
 
-def test_insert_rotors_incorrect_quantity():
+def test_insert_empty_value_of_rotors():
     enigma_if = Enigma_interface(Enigma)
-    rotors = '1,2'
+    rotors = ''
     with pytest.raises(InvalidRotorQuantity):
         enigma_if.create_list_of_rotors(rotors)
 
@@ -125,14 +126,3 @@ def test_insert_rotors_incorrect_quantity_space():
     with pytest.raises(InvalidRotorValues):
         enigma_if.create_list_of_rotors(rotors)
 
-def test_insert_empty_value_of_rotors():
-    enigma_if = Enigma_interface(Enigma)
-    rotors = ''
-    with pytest.raises(InvalidRotorQuantity):
-        enigma_if.create_list_of_rotors(rotors)
-
-def test_insert_too_many_values_of_rotors():
-    enigma_if = Enigma_interface(Enigma)
-    rotors = '1,2,3,4'
-    with pytest.raises(InvalidRotorQuantity):
-        enigma_if.create_list_of_rotors(rotors)

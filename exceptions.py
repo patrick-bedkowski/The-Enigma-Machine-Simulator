@@ -69,23 +69,23 @@ class FileNotFound(ValueError):
     def __init__(self, input_file):
         super().__init__('\n> File was not found')
         self.input_file = input_file
-    
+
 class InvalidRotorValues(ValueError):
     def __init__(self, rotors):
         super().__init__('\n> Invalid rotor values')
         self.rotors = rotors
 
 class InvalidRotorQuantity(ValueError):
-    def __init__(self, rotors):
+    def __init__(self, list_of_rotors):
         super().__init__('\n> Invalid rotor quantity')
-        self.rotors = rotors
+        self.list_of_rotors = list_of_rotors
 
 class NoTextToProcess(ValueError):
     def __init__(self, input_txt):
         super().__init__('\n> No text was inserted')
         self.input_txt = input_txt
 
-        
+
 
 
 '''

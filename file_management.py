@@ -5,7 +5,8 @@ from exceptions import (
     WrongNumberOfLines,
     UndefinedFileName,
     FileNotFound,
-    NoTextToProcess
+    NoTextToProcess,
+    InvalidRotorQuantity
 )
 import json
 
@@ -63,27 +64,31 @@ def save_txt_file(text):
     '''
     name_of_the_file = input('\nGive your file a name. Extension will be added automatically : ')
     if name_of_the_file:  # if name was inserted
-        for letter in name_of_the_file:  # iterate through every letter
-            # letter is checked for characters from ascii alphabet
-            # letter is inserted to function as formatted for uppercase character to fit condition in this function
-            if check_if_ascii(letter.upper()) or letter.isdigit():  # if letter mets assumpions continue
-                continue
-            else:
-                raise WrongFileName('File name assumpions were not met')
+        # Create file
+        create_file_txt(name_of_the_file, text)
+        '''
+        Proper message is displayed
+        '''
+        print(f'\nFile {name_of_the_file}.txt was created in the main directory')
+
     else:
         raise UndefinedFileName('No name was inserted')
 
+
+def create_file_txt(name_of_the_file, text):
+    for letter in name_of_the_file:  # iterate through every letter
+        # letter is checked for characters from ascii alphabet
+        # letter is inserted to function as formatted for uppercase character to fit condition in this function
+        if check_if_ascii(letter.upper()) or letter.isdigit():  # if letter mets assumpions continue
+            continue
+        else:
+            raise WrongFileName('File name assumpions were not met')
+    # If no exception has been raised continue
     '''
     File is created
     '''
     with open(f"{name_of_the_file}.txt", "w") as file:
         file.write(text)
-
-    '''
-    Proper message is displayed
-    '''
-    print(f'\nFile {name_of_the_file}.txt was created in the main directory')
-    #! Czy powinienem zapytać użytkownika o miejsce w jakim chce zapisać plik?
 
 
 '''
@@ -98,21 +103,30 @@ def save_json_file(settings):
 
     name_of_the_file = input('\nGive your file a name. Extension will be added automatically : ')
     if name_of_the_file:  # if name was inserted
-        for letter in name_of_the_file:  # iterate through every letter
-            if check_if_ascii(letter.upper()) or letter.isdigit():  # if letter mets assumpions continue
-                continue
-            else:
-                raise WrongFileName('File name assumpions were not met')
+
+        # Create file
+        create_file_json(name_of_the_file, settings)
+        '''
+        Proper message is displayed
+        '''
+        print(f'\n{name_of_the_file}.json was created in the main directory')
     else:
         raise UndefinedFileName('No name was inserted')
 
-    #File is created
+def create_file_json(name_of_the_file, settings):
+    for letter in name_of_the_file:  # iterate through every letter
+        # letter is checked for characters from ascii alphabet
+        # letter is inserted to function as formatted for uppercase character to fit condition in this function
+        if check_if_ascii(letter.upper()) or letter.isdigit():  # if letter mets assumpions continue
+            continue
+        else:
+            raise WrongFileName('File name assumpions were not met')
+    # If no exception has been raised continue
+    '''
+    File is created
+    '''
     with open(f'{name_of_the_file}.json', 'w') as filehandle:
         json.dump(settings, filehandle)
-
-    # Proper message is displayed
-    print(f'\nFile data.json was created in the main directory')
-
 
 def read_json_file(path):
     '''
@@ -122,9 +136,9 @@ def read_json_file(path):
     try:
         with open(path, "r") as filehandle:  # open file
             data = json.load(filehandle)
-            rotors = data['rotors']
+            list_of_rotors = data['rotors']
             steckenbrett = data['steckenbrett']
             reflector = data['reflector']
-            return rotors[0], rotors[1], rotors[2], steckenbrett, reflector
+            return list_of_rotors, steckenbrett, reflector
     except FileNotFoundError:
         raise FileNotFound('File was not found')

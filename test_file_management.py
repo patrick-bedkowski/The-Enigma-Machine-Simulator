@@ -5,7 +5,6 @@ from file_management import (
     read_json_file
 )
 from exceptions import FileNotFound, UndefinedFileName, WrongFileName
-from string import ascii_uppercase
 import pytest
 # this module is neccessary to test function with inputs
 from io import StringIO
