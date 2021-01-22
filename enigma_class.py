@@ -17,13 +17,28 @@ class Enigma:
         :type list_of_rotors: list
         :default list_of_rotors: [1, 1, 1]
 
-        :param steckerbrett: Steckerbrett shows which letters should replace each other
+        :param steckerbrett: Steckerbrett shows which letters should be replaceed with another
         :type steckerbrett: dict
         :default steckerbrett: {}
 
         :param reflector: initial reflector setting of the rotor
         :type reflector: str
         :default reflector: 'A'
+
+        :param alpha: initial rotor setting
+        :type alpha: int
+
+        :param beta: initial rotor setting
+        :type beta: int
+
+        :param gamma: initial rotor setting
+        :type gamma: int
+
+        :param alphabet: uppercase ascii alphabet
+        :type gamma: list
+
+        :param initial_settings: holds inserted settings
+        :type initial_settings: dict
         '''
 
         '''
@@ -34,9 +49,9 @@ class Enigma:
 
         '''Checks rotor values'''
         if len(list_of_rotors) == 3:
-            self._alpha = self.check_set_rotor_value(list_of_rotors[0])
-            self._beta = self.check_set_rotor_value(list_of_rotors[1])
-            self._gamma = self.check_set_rotor_value(list_of_rotors[2])
+            self._alpha = self._check_set_rotor_value(list_of_rotors[0])
+            self._beta = self._check_set_rotor_value(list_of_rotors[1])
+            self._gamma = self._check_set_rotor_value(list_of_rotors[2])
             self._list_of_rotors = list_of_rotors
         else:
             raise InvalidRotorQuantity('Invalid rotor quantity')
@@ -44,8 +59,8 @@ class Enigma:
         # If steckerbrett has been inserted, check its content
         if steckerbrett:
             if (
-                self.steckerbrett_check_for_same_values(steckerbrett) and
-                self.steckerbrett_check_values(steckerbrett)
+                self._steckerbrett_check_for_same_values(steckerbrett)
+                and self._steckerbrett_check_values(steckerbrett)
             ):
                 self._steckerbrett = steckerbrett
         else:
@@ -53,49 +68,26 @@ class Enigma:
             self._steckerbrett = steckerbrett
 
         # if inserted reflector is in list of defined values, initiate reflector
-        if self.reflector_check_model(reflector):
+        if self._reflector_check_model(reflector):
             self._reflector = reflector
 
         # save initial settings, before they are changed
         # due to the program changing some of them
-        self.initial_settings = self.initial_settings()
+        self.initial_settings = self._initial_settings()
 
-    '''
-    SET: alpha, beta, gamma, steckerbrett, reflector
-    chyba nie są potrzebne, skoro nigdzie w programie
-    się do nich nie odwołuje
-    '''
-    def alpha(self):
-        return self._alpha
-
-    def beta(self):
-        return self._beta
-
-    def gamma(self):
-        return self._gamma
-
-    def list_of_rotors(self):
-        return self._list_of_rotors
-
-    def steckerbrett(self):
-        return self._steckerbrett
-
-    def reflector(self):
-        return self._reflector
-
-    def check_set_rotor_value(self, rotor):
+    def _check_set_rotor_value(self, rotor):
+        '''This function checks If inserted rotors are in range 1-26'''
         try:
-            if int(rotor) not in range (1,27):
+            if rotor not in range(1, 27):
                 raise InvalidRotorValues('Invalid rotor values')
             else:
                 return int(rotor)
         except ValueError:
             raise InvalidRotorValues('Invalid rotor values')
 
-
     '''STECKERBRETT / PLUGBOARD'''
 
-    def steckerbrett_check_for_same_values(self, steckerbrett_dict):
+    def _steckerbrett_check_for_same_values(self, steckerbrett_dict):
         '''
         Steckerbrett cannot hold two same values. This function checks if
         a character is repeated, either as a key or a value. Return True if
@@ -117,7 +109,7 @@ class Enigma:
         # return information that repetition of the values has not been detected
         return True
 
-    def steckerbrett_check_values(self, steckerbrett_dict):
+    def _steckerbrett_check_values(self, steckerbrett_dict):
         '''
         Steckerbrett cannot hold values that are not characters in used alphabet.
         Function Returns Boolean value True, or raises error.
@@ -131,7 +123,7 @@ class Enigma:
 
     '''REFLECTOR'''
 
-    def reflector_check_model(self, reflector):
+    def _reflector_check_model(self, reflector):
         '''Returns Boolean Value True if inserted reflector value
         matches reflectors specified in the project'''
         list_of_supported_reflectors = ['A', 'B', 'C']
@@ -140,13 +132,14 @@ class Enigma:
         else:
             return True
 
-    def reflector_alphabet(self):
+    def _reflector_alphabet(self):
         '''
-        Initiates value of reflector based on the choosing of the reflector
+        Returns a lsit with reflector alphabet in it, based on the choosing of the reflector
         '''
         '''
         Each of the specific reflector has defined alphabet,
-        that must not be changed
+        that must not be changed.
+        These are original reflector settings used in Engima machine from 1939
         '''
         if self._reflector == "A":
             # Original setting for reflector type UKW-A
@@ -169,7 +162,7 @@ class Enigma:
 
     '''Save initial settings'''
 
-    def initial_settings(self):
+    def _initial_settings(self):
         '''
         This method saves initial settings of the machine, before each rotor value
         is changed due to the ciphering process.
@@ -184,7 +177,7 @@ class Enigma:
 
     '''Heart of an algorythm.'''
 
-    def turn_rotors(self):
+    def _turn_rotors(self):
         '''Turn the rotors'''
 
         # All rotors are in border position (26,26,26)
@@ -205,7 +198,9 @@ class Enigma:
         else:
             self._alpha += 1
 
-    def rotor_alphabet(self, rotor):
+    def _rotor_alphabet(self, rotor):
+        '''Returns a list with rotor alphabet, based on the choosing of the rotor in method's parameter'''
+
         if rotor == 'alpha':
             # Original settings for the alpha rotor
             rotor_alphabet = [
@@ -226,15 +221,28 @@ class Enigma:
             ]
         return rotor_alphabet
 
-    def shift(self, alphabet, n):
-        '''returns input alphabet shifted to right n-1 times '''
+    def _shift(self, alphabet, n):
+        '''Returns input alphabet shifted to right n-1 times. n is the current setting of rotor'''
         '''not n times, because when rotor is in 1 position its
-        shifted alphabet will return the same hardcoded list'''
+        shifted alphabet will return the same hardcoded/not shifted list,
+        as in the origial machine'''
         return alphabet[(-n+1):] + alphabet[:(-n+1)]
 
-    def steckerbrett_change_letters(self, letter):
+    def _steckerbrett_change_letters(self, letter):
         '''
-        If letter is in steckerbrett, switch it for the coressponding one
+        If letter is in steckerbrett, switch it for the corresponding one
+        '''
+        '''
+        When letter is inserted to simulator it is checked for steckerbrett keys,
+        values. If letter has been found on key or value position,
+        it is changed for the corresponding one.
+
+        Input/Output:            A                    C
+                                 |                    |
+        conjuncted letters:     [A - M]          [B - C]
+                                     |            |
+                                     |            |
+        Rotor operations:            .M -> ... -> B.
         '''
         for key, value in self._steckerbrett.items():
             if letter == key:
@@ -248,41 +256,62 @@ class Enigma:
 
     def encryptingCodec(self, inserted_text):
         '''
-        Returns processed ciphered_text.
+        Returns processed ciphered_text
         '''
         ciphered_text = []
         for letter in inserted_text:
 
-            # if two letters are conjugated, one is switched with the other
+            # if two letters are conjuncted, one is switched with the other
             # for further coding
             if self._steckerbrett:
-                letter = self.steckerbrett_change_letters(letter)
+                letter = self._steckerbrett_change_letters(letter)
 
             # before first letter has been replaced, turn rotors
-            self.turn_rotors()
+            self._turn_rotors()
 
             '''Main ciphering algorithm'''
-            '''For better understanding upcoming algorythm, it is highly recommended
-            to open documentation file, where this proccess is explained using images'''
+
+            '''
+            For better understanding upcoming algorythm, it is highly recommended
+            to open how_TEMS_work file, where this process is explained using images.
+
+            First, self._rotor_alphabet gets a list with specific rotor alphabet. After that ROTOR'S alphabet
+            is shifted (self._alpha - 1) times the right. That produces a list that defines letter changing.
+            Then, it is calculated what index has a LETTER (inserted into the rotor) in ascii alphabet,
+            using .index() on self._alphabet.
+            At the end, new letter is selected from previously selected list on the same index.
+            '''
+
+            '''EACH alphabet of the rotor defines how letter is changed with one another when it is inserted
+            into the rotor. To better understand this process, align together ascii and rotor alphabet:
+            ASCII alphabet:       ['A','B','C','D','E','F','G'...]
+            ALPHA ROTOR alphabet: ['E','K','M','F','L','G','D'...]
+            When letter enters rotor ALPHA (before going through reflector), it is changed with one placed
+            on the same index in another list. Letter 'C' will be changed with letter 'M'.
+            All above is described when ALPHA setting is one, thus its alphabet is not shifted.
+
+            It is important to keep in mind the direction the letter is inserted into the rotor.
+            When the letter has passed the reflector and goes once again through ALPHA rotor it is
+            changed with another one, in an opposite way. 'K' will be changed with 'B'.
+            '''
 
             # get next letter by replacing it by rotor alphabet's letter on certain index
-            next_letter = self.shift(self.rotor_alphabet('alpha'),self._alpha)[self._alphabet.index(letter)]
-            next_letter = self.shift(self.rotor_alphabet('beta'),self._beta)[self._alphabet.index(next_letter)]
-            next_letter = self.shift(self.rotor_alphabet('gamma'),self._gamma)[self._alphabet.index(next_letter)]
+            next_letter = self._shift(self._rotor_alphabet('alpha'), self._alpha)[self._alphabet.index(letter)]
+            next_letter = self._shift(self._rotor_alphabet('beta'), self._beta)[self._alphabet.index(next_letter)]
+            next_letter = self._shift(self._rotor_alphabet('gamma'), self._gamma)[self._alphabet.index(next_letter)]
 
-            next_letter = self.reflector_alphabet()[self._alphabet.index(next_letter)]
+            next_letter = self._reflector_alphabet()[self._alphabet.index(next_letter)]
 
-            next_letter = self._alphabet[self.shift(self.rotor_alphabet('gamma'),self._gamma).index(next_letter)]
-            next_letter = self._alphabet[self.shift(self.rotor_alphabet('beta'),self._beta).index(next_letter)]
-            next_letter = self._alphabet[self.shift(self.rotor_alphabet('alpha'),self._alpha).index(next_letter)]
+            next_letter = self._alphabet[self._shift(self._rotor_alphabet('gamma'),self._gamma).index(next_letter)]
+            next_letter = self._alphabet[self._shift(self._rotor_alphabet('beta'),self._beta).index(next_letter)]
+            next_letter = self._alphabet[self._shift(self._rotor_alphabet('alpha'),self._alpha).index(next_letter)]
 
-            # Once again conjugated letters are replaced with each other
+            # Once again conjuncted letters are replaced with each other
             if self._steckerbrett:
-                next_letter = self.steckerbrett_change_letters(next_letter)
+                next_letter = self._steckerbrett_change_letters(next_letter)
 
             # append encripted letter to ciphered_text
             ciphered_text.append(next_letter)
 
-        '''Return Modified'''
         # return message created by combining every letter from the list
         return("".join(ciphered_text))

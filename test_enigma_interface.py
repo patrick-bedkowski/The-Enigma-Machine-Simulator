@@ -11,7 +11,9 @@ from exceptions import (
 # this module is neccessary to test function with inputs
 from io import StringIO
 
+
 '''FORMAT Steckerbrett to dictionary'''
+
 
 def test_format_dict():
     enigma_if = Enigma_interface(Enigma)
@@ -73,10 +75,11 @@ def test_reflector_empty():
 
 '''ROTOR INSERTS'''
 
+
 def test_insert_rotors_correct_values():
     enigma_if = Enigma_interface(Enigma)
     rotors = '1,2,3'
-    assert enigma_if.create_list_of_rotors(rotors) == ['1', '2', '3']
+    assert enigma_if.create_list_of_rotors(rotors) == [1, 2, 3]
 
 def test_insert_rotors_space():
     enigma_if = Enigma_interface(Enigma)
@@ -126,3 +129,9 @@ def test_insert_rotors_incorrect_quantity_space():
     with pytest.raises(InvalidRotorValues):
         enigma_if.create_list_of_rotors(rotors)
 
+def test_insert_rotors_zero_before_value():
+    enigma_if = Enigma_interface(Enigma)
+    rotors = '1,2,01'
+    '''This works, because python when converting string value "01"
+    to intiger, detects that zero is present in front of integer and ignores it'''
+    assert enigma_if.create_list_of_rotors(rotors) == [1, 2, 1]

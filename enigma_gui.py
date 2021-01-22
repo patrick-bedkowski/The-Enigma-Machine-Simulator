@@ -1,16 +1,18 @@
-from gui import EnigmaUi, EnigmaWindow
+from gui import EnigmaWindow
 from PyQt5 import QtWidgets
-#from main import enigma_interface
-from enigma_class import Enigma
+import sys
 
-if __name__ == "__main__":
-    import sys
+
+def main():
+    # create an app
     app = QtWidgets.QApplication(sys.argv)
-    #Enigma_ui = QtWidgets.QWidget()
-    """ui = EnigmaUi()
-    ui.setupUi(Enigma_ui)"""
+    # create object of an EnigmaWindow class
     window = EnigmaWindow()
+    # initiate gui window
     window.show()
-
-    #Enigma_ui.show()
+    # exit application
     sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    main()

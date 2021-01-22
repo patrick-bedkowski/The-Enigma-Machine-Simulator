@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'import_enigma.ui'
 #
 # Created by: PyQt5 UI code generator 5.14.1
-#
-# WARNING! All changes made in this file will be lost!
 
-#Gui expanded with options
 from PyQt5 import QtCore, QtGui, QtWidgets
 from enigma import Enigma_interface
 from enigma_class import Enigma
 from PyQt5.QtGui import QPalette, QColor
+# needed to format file path
 import pathlib
 
+# import needed to export, import files
 from file_management import (
     create_file_txt,
-    create_file_json
+    create_file_json,
+    read_txt_file,
+    read_json_file
 )
 
 from exceptions import (
@@ -144,8 +143,6 @@ class EnigmaUi(QtWidgets.QMainWindow):
         self.export_button_txt.setFont(font)
         self.export_button_txt.setIconSize(QtCore.QSize(18, 16))
         self.export_button_txt.setObjectName("export_button_txt")
-        #self.export_button_txt_label.setFontWeight(QtGui.QFont.Bold)
-        #self.export_button_txt.setFontWeight()
         self.export_layout_2.addWidget(self.export_button_txt)
         self.saveTxtLayout.addLayout(self.export_layout_2)
         self.layoutWidget_4 = QtWidgets.QWidget(Enigma_ui)
@@ -345,14 +342,12 @@ class EnigmaUi(QtWidgets.QMainWindow):
         self.gamma_combo.setFont(font)
         self.gamma_combo.setObjectName("gamma_combo")
 
-
         '''For each rotor, create item 26 times'''
         '''looks cleaner, then code created automatically by QTDesigner'''
-        for number in range(0,26):
+        for number in range(0, 26):
             self.alpha_combo.addItem("")
             self.beta_combo.addItem("")
             self.gamma_combo.addItem("")
-
 
         # Now use a palette to switch to dark colors:
         palette = QPalette()
@@ -360,12 +355,11 @@ class EnigmaUi(QtWidgets.QMainWindow):
         palette.setColor(QPalette.WindowText, QColor(255, 255, 255))
         palette.setColor(QPalette.Base, QColor(25, 25, 25))
         palette.setColor(QPalette.Text, QColor(255, 255, 255))
-        palette.setColor(QPalette.Button, QColor(255,0,0))
+        palette.setColor(QPalette.Button, QColor(255, 0, 0))
         palette.setColor(QPalette.ButtonText, QColor(255, 255, 255))
         self.setPalette(palette)
         self.start_button.setPalette(palette)
         self.start_button.setAutoFillBackground(True)
-
 
         StyleSheet = '''
             QPushButton {
@@ -406,7 +400,6 @@ class EnigmaUi(QtWidgets.QMainWindow):
             '''
         self.setStyleSheet(StyleSheet)
 
-
         self.rotor_setting_gamma_layout.addWidget(self.gamma_combo)
         self.rotor_settings_layout.addLayout(self.rotor_setting_gamma_layout)
         self.rotor_layout.addLayout(self.rotor_settings_layout)
@@ -416,7 +409,7 @@ class EnigmaUi(QtWidgets.QMainWindow):
     def retranslateUi(self, Enigma_ui):
         _translate = QtCore.QCoreApplication.translate
         Enigma_ui.setWindowTitle("Enigma Machine Simulator")
-        Enigma_ui.setWindowIcon(QtGui.QIcon('encryption.png'))
+        Enigma_ui.setWindowIcon(QtGui.QIcon('ciphering.png'))
         self.enigma_label.setText(_translate("Enigma_ui", "Enigma Machine Simulator"))
         self.start_button.setText(_translate("Enigma_ui", "START MACHINE"))
         self.export_button_json_label.setText(_translate("Enigma_ui", "Save Enigma settings into .json file"))
@@ -440,28 +433,21 @@ class EnigmaUi(QtWidgets.QMainWindow):
         '''Set alpha, beta, gamma combo'''
         '''looks cleaner, then code created automatically by QTDesigner'''
         for number in range(0,26):
-            self.alpha_combo.setItemText(number, _translate("Enigma_ui", f"{number+1}"))
-            self.beta_combo.setItemText(number, _translate("Enigma_ui", f"{number+1}"))
-            self.gamma_combo.setItemText(number, _translate("Enigma_ui", f"{number+1}"))
+            self.alpha_combo.setItemText(number, _translate("Enigma_ui", str(number + 1)))
+            self.beta_combo.setItemText(number, _translate("Enigma_ui", str(number + 1)))
+            self.gamma_combo.setItemText(number, _translate("Enigma_ui", str(number + 1)))
 
 '''
 Create a Controller class to connect the GUI and the model
 '''
-
-"""if __name__ == "__main__":
-    import sys
-    app = QtWidgets.QApplication(sys.argv)
-    Enigma_ui = QtWidgets.QWidget()
-    ui = EnigmaUi()
-    ui.setupUi(Enigma_ui)
-    Enigma_ui.show()
-    sys.exit(app.exec_())"""
 
 class EnigmaWindow(EnigmaUi):
     def __init__(self):
         super().__init__()
         self.setupUi(self)
         self.main_operations()
+        self.export_button_txt.clicked.connect(self.saveFileTxt)
+        self.export_button_json.clicked.connect(self.saveFileJson)
 
     def main_operations(self):
         '''
@@ -472,7 +458,7 @@ class EnigmaWindow(EnigmaUi):
             > browse and choose file containing text\n\
             > browse and choose file containing settings or leave it blank and insert settings yourself\n\
             > click "Start Machine" button to run the program\n\
-            > after certain message is showed in this window,\n\
+            > after certain message is showed up in this window,\n\
                you may export processed text and settings to a file\n'
         )
 
@@ -485,8 +471,8 @@ class EnigmaWindow(EnigmaUi):
         self.export_line_txt.setDisabled(True)
 
         '''Disable line_edit where inserted path is shown after browsing a file
-        Path insertion can only be done via button
-        '''
+        Path insertion can only be done via button'''
+
         self.browse_line_json.setDisabled(True)
         self.browse_line_txt.setDisabled(True)
 
@@ -544,17 +530,15 @@ class EnigmaWindow(EnigmaUi):
             self.export_button_json.setEnabled(False)
 
             try:
-                #! czy to musi przejść przez interfejs czy od razu do warstwy trwałości?
-                list_of_rotors, steckerbrett, reflector = self.enigma_interface.read_json_file_method(self.jsonBrowseFileName)
+                list_of_rotors, steckerbrett, reflector = read_json_file(self.jsonBrowseFileName)
                 variables_collected = True
             except FileNotFound as Message:
                 self.print_messages(Message)
 
-
         if variables_collected:
-        # If inserted path to .txt file is not empty:
+            # If inserted path to .txt file is not empty:
             try:
-                ciphered_text = self.enigma_interface.read_from_txt_file(self.txtBrowseFileName)
+                ciphered_text = read_txt_file(self.txtBrowseFileName)
 
                 # get processed text
                 self.processed_text = self.process_data(list_of_rotors, steckerbrett, reflector, ciphered_text)
@@ -562,13 +546,14 @@ class EnigmaWindow(EnigmaUi):
                 text_to_print += f'Processed text: <p style="color:#2D2"><b>{self.processed_text}</b></p> If you wish to export processed data, use buttons below<br>'
                 self.print_messages(text_to_print)
 
-                # Enable EXPORT button
+                # Enable EXPORT txt button
                 self.export_button_txt.setEnabled(True)
 
-                # read if buttons have been clicked
-                self.export_button_json.clicked.connect(self.getSaveFileNameJson)
-                self.export_button_txt.clicked.connect(self.getSaveFileNameTxt)
-            except (
+                # export buttons are located in the __init__
+                # because I observed multiple clicks when calling
+                # button.click.connect function from here
+                # it does not affect buttons being disabled
+            except(
                 FileNotFoundError,
                 FileNotFound,
                 WrongNumberOfLines,
@@ -580,10 +565,14 @@ class EnigmaWindow(EnigmaUi):
                 InvalidRotorValues,
                 NoReflectorSelected,
                 InvalidRotorQuantity
-                ) as Message:
-                self.export_button_json.setEnabled(False)
+            ) as Message:
+                self.export_button_txt.setEnabled(False)
                 self.export_button_json.setEnabled(False)
                 self.print_messages(Message)
+
+    """def observe_if_buttons_are_clicked(self):
+        self.export_button_txt.clicked.connect(self.saveFileTxt)
+        self.export_button_json.clicked.connect(self.saveFileJson)"""
 
     def process_data(self, list_of_rotors, steckerbrett, reflector, ciphered_text):
         '''Returns processed data from enigma_class'''
@@ -591,64 +580,58 @@ class EnigmaWindow(EnigmaUi):
         processed_text = self.enigma.encryptingCodec(ciphered_text)
         return processed_text
 
-    """def return_data(self):
-        '''Returnes all initial data insertet by the user, as a list'''
-        data_to_return = [
-            self.alpha,
-            self.beta,
-            self.gamma,
-            self.steckerbrett,
-            self.reflector
-        ]
-        return data_to_return"""
-
     '''Get values inserted into combo boxes '''
     def get_rotor_values_from_combo_boxes(self):
         '''Returns list of rotors' values selected from comboboxes'''
-        alpha = self.alpha_combo.currentText()
-        beta = self.beta_combo.currentText()
-        gamma = self.gamma_combo.currentText()
+        alpha = int(self.alpha_combo.currentText())
+        beta = int(self.beta_combo.currentText())
+        gamma = int(self.gamma_combo.currentText())
         return [alpha, beta, gamma]
-
 
     def print_messages(self, message):
         '''Shows text to user'''
         self.debugTextBrowser.setText(str(message))
-
 
     '''
     Browse/Import Button Functions
     '''
 
     def getTxtFile(self):
-        filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', '','Text file (*.txt)')
+        filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', '', 'Text file (*.txt)')
+        # show message about file
         self.browse_line_txt.setText(filename[0])
         self.txtBrowseFileName = filename[0]
 
     def getJsonFile(self):
-        filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', '','Json file (*.json)')
+        filename = QtWidgets.QFileDialog.getOpenFileName(self, 'Open file', '', 'Json file (*.json)')
+        # show message about file
         self.browse_line_json.setText(filename[0])
         self.jsonBrowseFileName = filename[0]
 
-    def getSaveFileNameTxt(self):
-        filename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', '','Text file (*.txt)')
+    def saveFileTxt(self):
+        filename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', '', 'Text file (*.txt)')
+        # show message about file
         self.export_line_txt.setText(filename[0])
-        txtExportFileName = pathlib.PureWindowsPath(f'{filename[0]}').name[:-4]  # remove .txt extension, it will be added later
+        txtExportFileName = pathlib.PureWindowsPath(f'{filename[0]}').name[:-4]  # remove .txt extension, it will be added during file saving
         try:
             if txtExportFileName:
                 create_file_txt(txtExportFileName, self.processed_text)
-                self.print_messages(f'\n{txtExportFileName} file saved succesfully')
+                # show message about file
+                self.print_messages(f'\n{txtExportFileName}.txt file saved successfully')
         except (UndefinedFileName, WrongFileName) as Message:
+            # show error message about file
             self.print_messages(Message)
 
-    def getSaveFileNameJson(self):
-        filename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', '','Json file (*.json)')
+    def saveFileJson(self):
+        filename = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File', '', 'Json file (*.json)')
         self.export_line_json.setText(filename[0])
-        jsonExportFileName = pathlib.PureWindowsPath(f'{filename[0]}').name[:-5]  # remove .json extension, it will be added later
+        jsonExportFileName = pathlib.PureWindowsPath(f'{filename[0]}').name[:-5]  # remove .json extension, it will be added during file saving
 
         try:
             if jsonExportFileName:
                 create_file_json(jsonExportFileName, self.enigma.initial_settings)
-                self.print_messages(f'\n{jsonExportFileName} file saved succesfully')
+                # show message about file
+                self.print_messages(f'\n{jsonExportFileName}.json file saved successfully')
         except (UndefinedFileName, WrongFileName) as Message:
+            # show error message about file
             self.print_messages(Message)
