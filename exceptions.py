@@ -56,6 +56,12 @@ class InvalidRotorQuantity(ValueError):
         self.list_of_rotors = list_of_rotors
 
 
+class EnumerateValueError(ValueError):
+    def __init__(self, list_of_rotors):
+        super().__init__('\n> Invalid option was inserted')
+        self.list_of_rotors = list_of_rotors
+
+
 class InvalidRotorValues(ValueError):
     def __init__(self, rotors):
         super().__init__('\n> Invalid rotor values')

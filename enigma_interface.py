@@ -1,6 +1,7 @@
 from enigma_class import Enigma
 from string import ascii_uppercase
 import sys
+import os
 from file_management import (
     read_txt_file,
     save_txt_file,
@@ -23,7 +24,8 @@ from exceptions import (
     NoReflectorSelected,
     InvalidRotorQuantity,
     NoTextToProcess,
-    DecodeError
+    DecodeError,
+    EnumerateValueError
 )
 
 # Enigma welcome label
@@ -83,16 +85,6 @@ class Enigma_interface:
     def keyboard_interruption(self):
         return self._key_interruption
 
-    def start_options(self):
-        '''Returns options of intiating simulator'''
-        options = [
-            ['1. Read text from file',
-            '2. Enter own text',
-            '3. View design assumptions of the simulator',
-            '4. Quit']
-        ]
-        return options
-
     def main_menu(self):
         try:
             # initiate menu
@@ -134,6 +126,16 @@ class Enigma_interface:
             if ciphered_text:
                 self.ciphered_text = ciphered_text
                 break
+    
+    def start_options(self):
+        '''Returns options of intiating simulator'''
+        options = [
+            ['1. Read text from file',
+            '2. Enter own text',
+            '3. View design assumptions of the simulator',
+            '4. Quit']
+        ]
+        return options
 
     '''DISPLAY ASSUMPTIONS'''
 
@@ -154,16 +156,26 @@ class Enigma_interface:
         '''Imports text from file'''
 
         while True:
-            print(self._return_message)
-            input_file = input('\nWrite file path with extension .txt to insert into Enigma: ')
-            #
-            if input_file == 'y':
-                # return to main menu
-                break
+            # present availabe options to user
+            print('\n' + tabulate(self.input_file_options('txt'), tablefmt='fancy_grid'))
+            choice = input('\nInsert a number of option that you want to use: ')
             try:
-                ciphered_text = read_txt_file(input_file)
-                return ciphered_text
-            except FileNotFound as Message:
+                if choice == '1':
+                    input_file = f"txt_files\{self.display_files('txt')}"
+                    ciphered_text = read_txt_file(input_file)
+                    return ciphered_text
+                elif choice == '2':
+                    print(self._return_message)
+                    input_file = input('\nWrite file path with extension .txt to insert into Enigma: ')
+                    #
+                    if input_file == 'y':
+                        # return to main menu
+                        break
+                    ciphered_text = read_txt_file(input_file)
+                    return ciphered_text
+                else:
+                    print(self._option)
+            except (FileNotFound, ValueError) as Message:
                 print(f'{Message}. {self._insert_file_path}')
             except WrongNumberOfLines as Message:
                 print(f'{Message}. {self._insert_file_path}')
@@ -171,6 +183,40 @@ class Enigma_interface:
                 print(f'{Message}. Please, insert file with message')
             except NoAsciiDetected as Message:
                 print(f'{Message}. {self._insert_file_path}')
+            except ValueError:
+                print(f'{EnumerateValueError}.Please choose option again')
+
+    def input_file_options(self, file_type):
+        '''Returns options of intiating simulator'''
+        options = [
+            [f'1. view all files from {file_type}_files folder',
+            '2. insert own path to file']
+        ]
+        return options
+
+    def display_files(self, file_type):
+        if file_type == 'txt':
+            # save all filenames to a list
+            files_in_folder = os.listdir('./txt_files')
+        elif file_type == 'json':
+            # a list that holds all files in folder 
+            files_in_folder = os.listdir('./json_files')
+        else:
+            raise ValueError
+        number_of_files_in_folder = len(files_in_folder)
+        print(f'\nFiles found in the{file_type}_files folder:')
+        # display all files from txt_files folder
+        for element in enumerate(files_in_folder, start=1):
+            # display number of file and file name 
+            print(f'{chr(62)} {element[0]}. {element[1]}')
+        while True:
+            choice = int(input('\nPlease, choose which file to insert into Enigma Machine: '))
+            if choice in range(1, number_of_files_in_folder+1):
+                # return name of the file to insert
+                return files_in_folder[choice-1]
+            else:
+                print(self._option)
+
 
     '''INPUT TXT MANUALLY'''
 
@@ -226,14 +272,25 @@ class Enigma_interface:
     def import_settings_from_file(self):
         '''Reading settings from to .json file'''
         while True:
+            # present availabe options to user
+            print('\n' + tabulate(self.input_file_options('txt'), tablefmt='fancy_grid'))
+            choice = input('\nInsert a number of option that you want to use: ')
             try:
-                input_path = input('\nWrite file path with extension .json to insert settings into Enigma: ')
-                if input_path:
+                if choice == '1':
+                    input_path = f"json_files\{self.display_files('json')}"
                     list_of_rotors, steckerbrett, reflector = read_json_file(input_path)
                     # after settings are imported, initiate program
                     return list_of_rotors, steckerbrett, reflector
-                else:  # if input_file is empty, raise error
-                    raise FileNotFound('File was not found')
+                if choice == '2':
+                    input_path = input('\nWrite file path with extension .json to insert settings into Enigma: ')
+                    if input_path:
+                        list_of_rotors, steckerbrett, reflector = read_json_file(input_path)
+                        # after settings are imported, initiate program
+                        return list_of_rotors, steckerbrett, reflector
+                    else:  # if input_file is empty, raise error
+                        raise FileNotFound('File was not found')
+                else:
+                    print(self._option)
             except FileNotFound as Message:
                 print(f'{Message}. {self._insert_file_path}')
             except DecodeError as Message:
