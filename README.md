@@ -1,4 +1,5 @@
-<p align="left" height='50%' width='50%'><img src="ciphering.png"><h1>The Enigma Machine Simulator</hi></p>
+<p align="left"><img src="ciphering.png" height='50%' width='50%'><h1>The Enigma Machine Simulator</h1></p>
+
 
 * [General info](#general-info)
 * [Setup](#setup)
@@ -19,5 +20,5 @@ $ python enigma_gui.py
 
 #### Documentation
 To get familair with the technical side of the project, please open:
--How_TEMS_work.pdf
--Enigma documentation.pdf
+* How_TEMS_work.pdf
+* Enigma documentation.pdf
