@@ -1,5 +1,4 @@
-<p align="left"><img src="ciphering.png"></p>
-# Enigma Machine Simulator
+<div align="left" height='50%'><img src="ciphering.png"><br /><h1>The Enigma Machine Simulator</hi></div>
 
 * [General info](#general-info)
 * [Setup](#setup)
