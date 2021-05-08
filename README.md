@@ -1,5 +1,12 @@
-<p align="left"><img src="ciphering.png" height='50%' width='50%'><h1>The Enigma Machine Simulator</h1></p>
+<head>
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+</head>
 
+<p align="left">
+  <img src="https://raw.githubusercontent.com/patrick-bedkowski/The-Enigma-Machine-Simulator/master/ciphering.png" height='50 px' width='50 px'>
+ <span style="font-size: 3.25em;  font-family: 'Lato', sans-serif;">The Enigma Machine Simulator</span>
+</p>
 
 * [General info](#general-info)
 * [Setup](#setup)
