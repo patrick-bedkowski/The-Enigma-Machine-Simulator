@@ -1,6 +1,9 @@
-## Table of contents
+<p align="left"><img src="ciphering.png"></p>
+# Enigma Machine Simulator
+
 * [General info](#general-info)
 * [Setup](#setup)
+* [Documentation](#documentation)
 
 ## General info
 The Enigma Machine Simulator is a simple program that mimics Enigma Machine used in World War II.
@@ -15,6 +18,7 @@ $ python enigma.py
 $ python enigma_gui.py
 ```
 
+#### Documentation
 To get familair with the technical side of the project, please open:
 -How_TEMS_work.pdf
 -Enigma documentation.pdf
